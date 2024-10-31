@@ -1,0 +1,27 @@
+/* Style the container div for each input and label */
+div {
+    margin-bottom: 10px;
+}
+
+label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+
+input, select {
+    padding: 8px;
+    width: 30%;
+    box-sizing: border-box;
+}
+
+.error-text {
+    color: red;     
+    font-weight: bold; 
+}
+
+button:disabled {
+    background-color: #d3d3d3;  
+    color: #a9a9a9;  
+    cursor: not-allowed;  
+}
