@@ -7,18 +7,21 @@ import TrainerLogin from './pages/TrainerLogin';
 import SignUp from './pages/SignUp';
 import ClientHome from './pages/ClientHome';
 import TrainerHome from './pages/TrainerHome';
+import './App.css';
 
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Home/>} />
-        <Route path="/clientlogin" element={<ClientLogin/>} />
-        <Route path="/trainerlogin" element={<TrainerLogin/>} />
-        <Route path="/signup" element={<SignUp/>} />
-        <Route path="/clienthome" element={<ClientHome/>} />
-        <Route path="/trainerhome" element={<TrainerHome/>} />
-      </Routes>
+      <div className="centered-container">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/clientlogin" element={<ClientLogin />} />
+          <Route path="/trainerlogin" element={<TrainerLogin />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/clienthome" element={<ClientHome />} />
+          <Route path="/trainerhome" element={<TrainerHome />} />
+        </Routes>
+      </div>
     </Router>
   );
 }
