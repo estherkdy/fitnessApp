@@ -5,7 +5,7 @@ function ClientHome() {
     const navigate = useNavigate();
 
     return (
-        <div>
+        <div className="home">
             <button onClick={() => navigate('/')}>Home</button>
             <h1>Client Home Page</h1>
             <button>View Trainer Info</button> {/* view trainer's info */}
