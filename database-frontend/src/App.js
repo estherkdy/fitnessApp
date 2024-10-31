@@ -7,6 +7,7 @@ import TrainerLogin from './pages/TrainerLogin';
 import SignUp from './pages/SignUp';
 import ClientHome from './pages/ClientHome';
 import TrainerHome from './pages/TrainerHome';
+import './App.css';
 
 function App() {
   return (
