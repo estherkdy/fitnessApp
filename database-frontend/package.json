@@ -36,5 +36,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint": "^9.13.0",
+    "eslint-plugin-flowtype": "^8.0.3"
   }
 }
