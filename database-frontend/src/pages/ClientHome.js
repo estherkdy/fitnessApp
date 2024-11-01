@@ -19,6 +19,10 @@ function ClientHome() {
                 { id: 2, name: 'K' },
             ];
             setTrainerInfo(trainers);
+            setFitnessPlan([]);
+            setExerciseStatus([]);
+            setMealStatus([]);
+            setReminders([]);
         };
 
         // viewing the fitness plan
@@ -28,7 +32,11 @@ function ClientHome() {
                 { day: 'Monday', exercises: 'Squats, Lunges' },
                 { day: 'Wednesday', exercises: 'Push-ups, Planks' },
             ];
+            setTrainerInfo([]);
             setFitnessPlan(plans);
+            setExerciseStatus([]);
+            setMealStatus([]);
+            setReminders([]);
         };
 
         const updateExercisePlan = () => {
@@ -37,7 +45,11 @@ function ClientHome() {
                 { exercise: 'Squats', completed: true },
                 { exercise: 'Lunges', completed: false },
             ];
+            setTrainerInfo([]);
+            setFitnessPlan([]);
             setExerciseStatus(updatedStatus);
+            setMealStatus([]);
+            setReminders([]);
         };
 
         const updateMealPlan = () => {
@@ -46,7 +58,11 @@ function ClientHome() {
                 { meal: 'Breakfast', eaten: true },
                 { meal: 'Lunch', eaten: false },
             ];
+            setTrainerInfo([]);
+            setFitnessPlan([]);
+            setExerciseStatus([]);
             setMealStatus(meals);
+            setReminders([]);
         };
     
         const checkReminder = () => { 
@@ -54,6 +70,10 @@ function ClientHome() {
                 { id: 1, reminder: 'Drink water every hour' },
                 { id: 2, reminder: 'Do stretching exercises' },
             ];
+            setTrainerInfo([]);
+            setFitnessPlan([]);
+            setExerciseStatus([]);
+            setMealStatus([]);
             setReminders(remindersList);
         };
 
