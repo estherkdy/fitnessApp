@@ -89,7 +89,7 @@ function ClientHome() {
             <h1>Client Home Page</h1>
             <button onClick={getTrainer}>View Trainer Info</button> {/* view trainer's info */}
             <button onClick={viewFitnessPlan}>View Fitness Plan</button> {/* view your fitness plan */}
-            <button onClick={updateExercisePlan}>Update Exeercise Status</button> {/* check off exercises completed */}
+            <button onClick={updateExercisePlan}>Update Exercise Status</button> {/* check off exercises completed */}
             <button onClick={updateMealPlan}>Update Meal Status</button> {/* check off meals eaten */}
             <button onClick={checkReminder}>Check Reminders</button> {/* check reminders */}
             <button onClick={deleteAccount}>Delete Account</button> {/* Delete all user info */}
