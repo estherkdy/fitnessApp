@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify
 import mysql.connector
 from mysql.connector import Error
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 def create_connection():
     try:
