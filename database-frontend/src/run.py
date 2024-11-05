@@ -144,5 +144,9 @@ def add_exercise():
     finally:
         close_connection(connection)
 
+@app.route('/')
+def home():
+    return "Welcome to the Calorie Tracker API!"
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import axios from 'axios';
 
 function ClientLogin() {
     const navigate = useNavigate();
@@ -10,12 +10,29 @@ function ClientLogin() {
     const handleEmail = (event) => {
         setEmail(event.target.value);
     };
+
     const handlePassword = (event) => {
         setPassword(event.target.value);
     };
-    const handleLogin = () => {
-        // check for email and password in database
-        navigate('/clienthome');
+
+    const handleLogin = async () => {
+        try {
+            const response = await axios.post('/login', {
+                email,
+                password,
+                user_type: 'client',
+            });
+            if (response.data.message === 'Login successful') {
+                const clientId = response.data.client_id;
+                localStorage.setItem('clientId', clientId);
+                navigate('/clienthome');
+            } else {
+                alert('Invalid credentials');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            alert('Failed to log in');
+        }
     };
 
     const disabled = !email || !password;

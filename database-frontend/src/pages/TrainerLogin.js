@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
- 
+import axios from 'axios';
 
 function TrainerLogin() {
     const navigate = useNavigate();
@@ -10,12 +10,29 @@ function TrainerLogin() {
     const handleEmail = (event) => {
         setEmail(event.target.value);
     };
+
     const handlePassword = (event) => {
         setPassword(event.target.value);
     };
-    const handleLogin = () => {
-        // check for email and password in database
-        navigate('/trainerhome');
+
+    const handleLogin = async () => {
+        try {
+            const response = await axios.post('/login', {
+                email,
+                password,
+                user_type: 'trainer',
+            });
+            if (response.data.message === 'Login successful') {
+                const trainerID = response.data.trainer_id;
+                localStorage.setItem('trainerID', trainerID);
+                navigate('/trainerhome');
+            } else {
+                alert('Invalid credentials');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            alert('Failed to log in');
+        }
     };
 
     const disabled = !email || !password;

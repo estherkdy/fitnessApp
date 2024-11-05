@@ -1,222 +1,190 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import './ClientHome.css';
+
 
 function ClientHome() {
     const navigate = useNavigate();
-
-        // Statevariables for the data
-        const [trainerInfo, setTrainerInfo] = useState([]);
-        const [fitnessPlan, setFitnessPlan] = useState([]);
-        const [exerciseStatus, setExerciseStatus] = useState([]);
-        const [mealStatus, setMealStatus] = useState([]);
-        const [reminders, setReminders] = useState([]);
-
-
-        const getTrainer = () => {
-            // Placeholder data, replace when connected with backend
-            const trainers = [
-                { id: 1, name: 'Esther Kim' },
-                { id: 2, name: 'K' },
-            ];
-            setTrainerInfo(trainers);
-            setFitnessPlan([]);
-            setExerciseStatus([]);
-            setMealStatus([]);
-            setReminders([]);
-        };
-
-        // viewing the fitness plan
-        const viewFitnessPlan = () => {
-            // day and exercise for that day
-            const plans = [
-                { day: 'Monday', exercises: 'Squats, Lunges' },
-                { day: 'Wednesday', exercises: 'Push-ups, Planks' },
-            ];
-            setTrainerInfo([]);
-            setFitnessPlan(plans);
-            setExerciseStatus([]);
-            setMealStatus([]);
-            setReminders([]);
-        };
-
-        const updateExercisePlan = () => {
-            // bool for if an exercise is completed or not
-            const updatedStatus = [
-                { exercise: 'Squats', completed: true },
-                { exercise: 'Lunges', completed: false },
-            ];
-            setTrainerInfo([]);
-            setFitnessPlan([]);
-            setExerciseStatus(updatedStatus);
-            setMealStatus([]);
-            setReminders([]);
-        };
-
-        const updateMealPlan = () => {
-            // meal plam
-            const meals = [
-                { meal: 'Breakfast', eaten: true },
-                { meal: 'Lunch', eaten: false },
-            ];
-            setTrainerInfo([]);
-            setFitnessPlan([]);
-            setExerciseStatus([]);
-            setMealStatus(meals);
-            setReminders([]);
-        };
+    const [trainerInfo, setTrainerInfo] = useState(null);
+    const [fitnessPlan, setFitnessPlan] = useState([]);
+    const [reminders, setReminders] = useState([]);
     
-        const checkReminder = () => { 
-            const remindersList = [
-                { id: 1, reminder: 'Drink water every hour' },
-                { id: 2, reminder: 'Do stretching exercises' },
-            ];
-            setTrainerInfo([]);
-            setFitnessPlan([]);
-            setExerciseStatus([]);
-            setMealStatus([]);
-            setReminders(remindersList);
-        };
+    const [trainerFetched, setTrainerFetched] = useState(false);
+    const [fitnessPlanFetched, setFitnessPlanFetched] = useState(false);
+    const [remindersFetched, setRemindersFetched] = useState(false);
 
-        const deleteAccount = () => {
-            
-            console.log('Account deleted');
-            
-        };
-    
+    const clientId = localStorage.getItem('clientId'); 
+
+    const getTrainer = async () => {
+        setTrainerFetched(true);
+        try {
+            const response = await axios.get(`/client/${clientId}/trainer`);
+            setTrainerInfo(response.data);
+        } catch (error) {
+            console.error('Error fetching trainer info:', error);
+        }
+    };
+
+    const viewFitnessPlan = async () => {
+        setFitnessPlanFetched(true);
+        try {
+            const response = await axios.get(`/client/${clientId}/fitness_plan`);
+            setFitnessPlan(response.data);
+        } catch (error) {
+            console.error('Error fetching fitness plan:', error);
+        }
+    };
+
+    const updateExerciseStatus = async (exerciseId, completed) => {
+        try {
+            const response = await axios.patch(`/client/${clientId}/exercise_status`, {
+                exercise_id: exerciseId,
+                completed: completed
+            });
+            console.log(response.data.message);
+            viewFitnessPlan(); 
+        } catch (error) {
+            console.error('Error updating exercise status:', error);
+        }
+    };
+
+    const updateMealStatus = async (mealId, completed) => {
+        try {
+            const response = await axios.patch(`/client/${clientId}/meal_status`, {
+                meal_id: mealId,
+                completed: completed
+            });
+            console.log(response.data.message);
+            viewFitnessPlan(); 
+        } catch (error) {
+            console.error('Error updating meal status:', error);
+        }
+    };
+
+    const checkReminders = async () => {
+        setRemindersFetched(true);
+        try {
+            const response = await axios.get(`/client/${clientId}/reminders`);
+            setReminders(response.data);
+        } catch (error) {
+            console.error('Error fetching reminders:', error);
+        }
+    };
+
+    const deleteAccount = async () => {
+        try {
+            await axios.delete(`/client/${clientId}/delete`);
+            alert('Account deleted');
+            localStorage.removeItem('clientId');
+            navigate('/');
+        } catch (error) {
+            console.error('Error deleting account:', error);
+        }
+    };
+
     return (
         <div className="home">
             <button onClick={() => navigate('/')}>Home</button>
             <h1>Client Home Page</h1>
-            <button onClick={getTrainer}>View Trainer Info</button> {/* view trainer's info */}
-            <button onClick={viewFitnessPlan}>View Fitness Plan</button> {/* view your fitness plan */}
-            <button onClick={updateExercisePlan}>Update Exercise Status</button> {/* check off exercises completed */}
-            <button onClick={updateMealPlan}>Update Meal Status</button> {/* check off meals eaten */}
-            <button onClick={checkReminder}>Check Reminders</button> {/* check reminders */}
-            <button onClick={deleteAccount}>Delete Account</button> {/* Delete all user info */}
 
-
-                {/* Displaying trainer information */}
-                {trainerInfo.length > 0 && (
-                <div>
-                    <h2>Trainer Information</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                             
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {trainerInfo.map((trainer) => (
-                                <tr key={trainer.id}>
-                                    <td>{trainer.id}</td>
-                                    <td>{trainer.name}</td>
+            {/* Trainer Info */}
+            <button onClick={getTrainer}>View Trainer Info</button>
+            {trainerFetched && (
+                trainerInfo ? (
+                    <div>
+                        <h2>Trainer Information</h2>
+                        <table>
+                            <thead>
+                                <tr><th>ID</th><th>Name</th><th>Specialty</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{trainerInfo.TrainerID}</td>
+                                    <td>{trainerInfo.FirstName} {trainerInfo.LastName}</td>
+                                    <td>{trainerInfo.Specialty}</td>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </tbody>
+                        </table>
+                    </div>
+                ) : (
+                    <p>No trainer assigned.</p>
+                )
             )}
 
-
-            {/* Display Fitness Plan */}
-            {fitnessPlan.length > 0 && (
-                <div>
-                    <h2>Fitness Plan</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Day</th>
-                                <th>Exercises</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {fitnessPlan.map((plan, index) => (
-                                <tr key={index}>
-                                    <td>{plan.day}</td>
-                                    <td>{plan.exercises}</td>
+            {/* Fitness Plan with Update Buttons for Exercises and Meals */}
+            <button onClick={viewFitnessPlan}>View Fitness Plan</button>
+            {fitnessPlanFetched && (
+                fitnessPlan.length > 0 ? (
+                    <div>
+                        <h2>Fitness Plan</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Plan ID</th>
+                                    <th>Description</th>
+                                    <th>End Date</th>
+                                    <th>Exercises</th>
+                                    <th>Meals</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                {fitnessPlan.map((plan, index) => (
+                                    <tr key={index}>
+                                        <td>{plan.PlanID}</td>
+                                        <td>{plan.Description}</td>
+                                        <td>{plan.EndDate}</td>
+                                        <td>
+                                            {plan.exercises?.map(ex => (
+                                                <div key={ex.ExerciseID}>
+                                                    <span>{ex.Name}</span>
+                                                    <button onClick={() => updateExerciseStatus(ex.ExerciseID, !ex.Completed)}>
+                                                        {ex.Completed ? "Mark as Incomplete" : "Mark as Complete"}
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </td>
+                                        <td>
+                                            {plan.meals?.map(meal => (
+                                                <div key={meal.MealID}>
+                                                    <span>{meal.Name}</span>
+                                                    <button onClick={() => updateMealStatus(meal.MealID, !meal.Completed)}>
+                                                        {meal.Completed ? "Mark as Incomplete" : "Mark as Complete"}
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                ) : (
+                    <p>No fitness plans found.</p>
+                )
             )}
 
-                  {/* Display Exercise Status */}
-                  {exerciseStatus.length > 0 && (
-                <div>
-                    <h2>Exercise Status</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Exercise</th>
-                                <th>Completed</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {exerciseStatus.map((status, index) => (
-                                <tr key={index}>
-                                    <td>{status.exercise}</td>
-                                    <td>{status.completed ? 'Yes' : 'No'}</td>
-                                </tr>
+            {/* Reminders */}
+            <button onClick={checkReminders}>Check Reminders</button>
+            {remindersFetched && (
+                reminders.length > 0 ? (
+                    <div>
+                        <h2>Reminders</h2>
+                        <ul>
+                            {reminders.map((reminder, index) => (
+                                <li key={index}>
+                                    {reminder.Message} (Due on: {reminder.ReminderDate})
+                                </li>
                             ))}
-                        </tbody>
-                    </table>
-                </div>
+                        </ul>
+                    </div>
+                ) : (
+                    <p>No reminders found.</p>
+                )
             )}
 
-                       {/* Display Meal Status */}
-                       {mealStatus.length > 0 && (
-                <div>
-                    <h2>Meal Status</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Meal</th>
-                                <th>Eaten</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {mealStatus.map((meal, index) => (
-                                <tr key={index}>
-                                    <td>{meal.meal}</td>
-                                    <td>{meal.eaten ? 'Yes' : 'No'}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-
-                        {/* Display Reminders */}
-                        {reminders.length > 0 && (
-                <div>
-                    <h2>Reminders</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Reminder</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {reminders.map((reminder) => (
-                                <tr key={reminder.id}>
-                                    <td>{reminder.id}</td>
-                                    <td>{reminder.reminder}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-
-
-
-
-
-
+            {/* Delete Account */}
+            <button onClick={deleteAccount}>Delete Account</button>
         </div>
     );
 }
