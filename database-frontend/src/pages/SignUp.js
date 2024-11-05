@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './SignUp.css'; 
 
 function SignUp() {
@@ -44,24 +45,35 @@ function SignUp() {
         setAge(event.target.value);
     };
     
-    const handleSignUp = () => {
+    const handleSignUp = async () => {
         if (password === confirmPassword) {
             setConfirmPasswordText('Confirm your password:');
-            setIsError(false); // Reset error state
-            if (userType === 'client') {
-                navigate('/clienthome');
-                console.log('Client signed up successfully.');
-                // Optionally log user details here
-                console.log({ firstName, lastName, height, weight, age });
-            } else {
-                navigate('/trainerhome');
-                console.log('Trainer signed up successfully.');
-                // Optionally log user details here
-                console.log({ firstName, lastName });
+            setIsError(false);
+    
+            const userData = {
+                firstName,
+                lastName,
+                email,
+                password,
+                user_type: userType,
+                ...(userType === 'client' && { height, weight, age }),
+                ...(userType === 'trainer' && { specialty: "Fitness" })
+            };
+    
+            try {
+                const response = await axios.post('/signup', userData, { withCredentials: true });
+                if (userType === 'client') {
+                    navigate('/clienthome');
+                } else {
+                    navigate('/trainerhome');
+                }
+                console.log(response.data.message);
+            } catch (error) {
+                console.error("Sign-up error: ", error);
             }
         } else {
             setConfirmPasswordText("Passwords don't match");
-            setIsError(true); // Set error state
+            setIsError(true);
             console.log('Sign up unsuccessful');
         }
     };

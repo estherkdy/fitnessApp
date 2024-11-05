@@ -17,12 +17,14 @@ function TrainerLogin() {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post('http://localhost:5000/login', {
+            const response = await axios.post('/login', {
                 email,
                 password,
                 user_type: 'trainer',
             });
             if (response.data.message === 'Login successful') {
+                const trainerID = response.data.trainer_id;
+                localStorage.setItem('trainerID', trainerID);
                 navigate('/trainerhome');
             } else {
                 alert('Invalid credentials');

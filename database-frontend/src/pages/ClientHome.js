@@ -1,61 +1,71 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './ClientHome.css';
+
 
 function ClientHome() {
     const navigate = useNavigate();
-    const [trainerInfo, setTrainerInfo] = useState([]);
+    const [trainerInfo, setTrainerInfo] = useState(null);
     const [fitnessPlan, setFitnessPlan] = useState([]);
-    const [exerciseStatus, setExerciseStatus] = useState([]);
-    const [mealStatus, setMealStatus] = useState([]);
     const [reminders, setReminders] = useState([]);
-    const clientId = 1; // Replace with actual client ID, possibly from authentication
+    
+    const [trainerFetched, setTrainerFetched] = useState(false);
+    const [fitnessPlanFetched, setFitnessPlanFetched] = useState(false);
+    const [remindersFetched, setRemindersFetched] = useState(false);
+
+    const clientId = localStorage.getItem('clientId'); 
 
     const getTrainer = async () => {
+        setTrainerFetched(true);
         try {
-            const response = await axios.get(`http://localhost:5000/client/${clientId}/trainer`);
-            setTrainerInfo([response.data]);
+            const response = await axios.get(`/client/${clientId}/trainer`);
+            setTrainerInfo(response.data);
         } catch (error) {
             console.error('Error fetching trainer info:', error);
         }
     };
 
     const viewFitnessPlan = async () => {
+        setFitnessPlanFetched(true);
         try {
-            const response = await axios.get(`http://localhost:5000/client/${clientId}/fitness_plan`);
+            const response = await axios.get(`/client/${clientId}/fitness_plan`);
             setFitnessPlan(response.data);
         } catch (error) {
             console.error('Error fetching fitness plan:', error);
         }
     };
 
-    const updateExercisePlan = async () => {
+    const updateExerciseStatus = async (exerciseId, completed) => {
         try {
-            const response = await axios.patch(`http://localhost:5000/client/${clientId}/exercise_status`, {
-                exercise_id: 1,  // Replace with actual exercise ID
-                completed: true
+            const response = await axios.patch(`/client/${clientId}/exercise_status`, {
+                exercise_id: exerciseId,
+                completed: completed
             });
             console.log(response.data.message);
+            viewFitnessPlan(); 
         } catch (error) {
             console.error('Error updating exercise status:', error);
         }
     };
 
-    const updateMealPlan = async () => {
+    const updateMealStatus = async (mealId, completed) => {
         try {
-            const response = await axios.patch(`http://localhost:5000/client/${clientId}/meal_status`, {
-                meal_id: 1,  // Replace with actual meal ID
-                completed: true
+            const response = await axios.patch(`/client/${clientId}/meal_status`, {
+                meal_id: mealId,
+                completed: completed
             });
             console.log(response.data.message);
+            viewFitnessPlan(); 
         } catch (error) {
             console.error('Error updating meal status:', error);
         }
     };
 
-    const checkReminder = async () => {
+    const checkReminders = async () => {
+        setRemindersFetched(true);
         try {
-            const response = await axios.get(`http://localhost:5000/client/${clientId}/reminders`);
+            const response = await axios.get(`/client/${clientId}/reminders`);
             setReminders(response.data);
         } catch (error) {
             console.error('Error fetching reminders:', error);
@@ -64,8 +74,9 @@ function ClientHome() {
 
     const deleteAccount = async () => {
         try {
-            await axios.delete(`http://localhost:5000/client/${clientId}/delete`);
+            await axios.delete(`/client/${clientId}/delete`);
             alert('Account deleted');
+            localStorage.removeItem('clientId');
             navigate('/');
         } catch (error) {
             console.error('Error deleting account:', error);
@@ -76,34 +87,104 @@ function ClientHome() {
         <div className="home">
             <button onClick={() => navigate('/')}>Home</button>
             <h1>Client Home Page</h1>
-            <button onClick={getTrainer}>View Trainer Info</button>
-            <button onClick={viewFitnessPlan}>View Fitness Plan</button>
-            <button onClick={updateExercisePlan}>Update Exercise Status</button>
-            <button onClick={updateMealPlan}>Update Meal Status</button>
-            <button onClick={checkReminder}>Check Reminders</button>
-            <button onClick={deleteAccount}>Delete Account</button>
 
-            {/* Display Trainer Info */}
-            {trainerInfo.length > 0 && (
-                <div>
-                    <h2>Trainer Information</h2>
-                    <table>
-                        <thead>
-                            <tr><th>ID</th><th>Name</th></tr>
-                        </thead>
-                        <tbody>
-                            {trainerInfo.map((trainer, index) => (
-                                <tr key={index}>
-                                    <td>{trainer.TrainerID}</td>
-                                    <td>{trainer.FirstName} {trainer.LastName}</td>
+            {/* Trainer Info */}
+            <button onClick={getTrainer}>View Trainer Info</button>
+            {trainerFetched && (
+                trainerInfo ? (
+                    <div>
+                        <h2>Trainer Information</h2>
+                        <table>
+                            <thead>
+                                <tr><th>ID</th><th>Name</th><th>Specialty</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{trainerInfo.TrainerID}</td>
+                                    <td>{trainerInfo.FirstName} {trainerInfo.LastName}</td>
+                                    <td>{trainerInfo.Specialty}</td>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </tbody>
+                        </table>
+                    </div>
+                ) : (
+                    <p>No trainer assigned.</p>
+                )
             )}
 
-            {/* Similar code for displaying Fitness Plan, Exercise Status, Meal Status, and Reminders */}
+            {/* Fitness Plan with Update Buttons for Exercises and Meals */}
+            <button onClick={viewFitnessPlan}>View Fitness Plan</button>
+            {fitnessPlanFetched && (
+                fitnessPlan.length > 0 ? (
+                    <div>
+                        <h2>Fitness Plan</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Plan ID</th>
+                                    <th>Description</th>
+                                    <th>End Date</th>
+                                    <th>Exercises</th>
+                                    <th>Meals</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {fitnessPlan.map((plan, index) => (
+                                    <tr key={index}>
+                                        <td>{plan.PlanID}</td>
+                                        <td>{plan.Description}</td>
+                                        <td>{plan.EndDate}</td>
+                                        <td>
+                                            {plan.exercises?.map(ex => (
+                                                <div key={ex.ExerciseID}>
+                                                    <span>{ex.Name}</span>
+                                                    <button onClick={() => updateExerciseStatus(ex.ExerciseID, !ex.Completed)}>
+                                                        {ex.Completed ? "Mark as Incomplete" : "Mark as Complete"}
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </td>
+                                        <td>
+                                            {plan.meals?.map(meal => (
+                                                <div key={meal.MealID}>
+                                                    <span>{meal.Name}</span>
+                                                    <button onClick={() => updateMealStatus(meal.MealID, !meal.Completed)}>
+                                                        {meal.Completed ? "Mark as Incomplete" : "Mark as Complete"}
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                ) : (
+                    <p>No fitness plans found.</p>
+                )
+            )}
+
+            {/* Reminders */}
+            <button onClick={checkReminders}>Check Reminders</button>
+            {remindersFetched && (
+                reminders.length > 0 ? (
+                    <div>
+                        <h2>Reminders</h2>
+                        <ul>
+                            {reminders.map((reminder, index) => (
+                                <li key={index}>
+                                    {reminder.Message} (Due on: {reminder.ReminderDate})
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ) : (
+                    <p>No reminders found.</p>
+                )
+            )}
+
+            {/* Delete Account */}
+            <button onClick={deleteAccount}>Delete Account</button>
         </div>
     );
 }

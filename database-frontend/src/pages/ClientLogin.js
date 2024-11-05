@@ -17,12 +17,14 @@ function ClientLogin() {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post('http://localhost:5000/login', {
+            const response = await axios.post('/login', {
                 email,
                 password,
                 user_type: 'client',
             });
             if (response.data.message === 'Login successful') {
+                const clientId = response.data.client_id;
+                localStorage.setItem('clientId', clientId);
                 navigate('/clienthome');
             } else {
                 alert('Invalid credentials');
