@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './ClientHome.css';
 
-
 function ClientHome() {
     const navigate = useNavigate();
     const [trainerInfo, setTrainerInfo] = useState(null);
@@ -31,6 +30,7 @@ function ClientHome() {
         try {
             const response = await axios.get(`/client/${clientId}/fitness_plan`);
             setFitnessPlan(response.data);
+            console.log("Fetched Fitness Plan:", response.data); // Log to verify data structure
         } catch (error) {
             console.error('Error fetching fitness plan:', error);
         }
@@ -38,12 +38,12 @@ function ClientHome() {
 
     const updateExerciseStatus = async (exerciseId, completed) => {
         try {
-            const response = await axios.patch(`/client/${clientId}/exercise_status`, {
+            await axios.patch(`/client/${clientId}/exercise_status`, {
                 exercise_id: exerciseId,
                 completed: completed
             });
-            console.log(response.data.message);
-            viewFitnessPlan(); 
+            console.log(`Exercise status updated to ${completed ? 'Complete' : 'Incomplete'}`);
+            viewFitnessPlan(); // Refresh fitness plan to show updated status
         } catch (error) {
             console.error('Error updating exercise status:', error);
         }
@@ -51,12 +51,12 @@ function ClientHome() {
 
     const updateMealStatus = async (mealId, completed) => {
         try {
-            const response = await axios.patch(`/client/${clientId}/meal_status`, {
+            await axios.patch(`/client/${clientId}/meal_status`, {
                 meal_id: mealId,
                 completed: completed
             });
-            console.log(response.data.message);
-            viewFitnessPlan(); 
+            console.log(`Meal status updated to ${completed ? 'Complete' : 'Incomplete'}`);
+            viewFitnessPlan(); // Refresh fitness plan to show updated status
         } catch (error) {
             console.error('Error updating meal status:', error);
         }
@@ -135,24 +135,36 @@ function ClientHome() {
                                         <td>{plan.Description}</td>
                                         <td>{plan.EndDate}</td>
                                         <td>
-                                            {plan.exercises?.map(ex => (
-                                                <div key={ex.ExerciseID}>
-                                                    <span>{ex.Name}</span>
-                                                    <button onClick={() => updateExerciseStatus(ex.ExerciseID, !ex.Completed)}>
-                                                        {ex.Completed ? "Mark as Incomplete" : "Mark as Complete"}
-                                                    </button>
-                                                </div>
-                                            ))}
+                                            {plan.exercises && plan.exercises.length > 0 ? (
+                                                plan.exercises.map(ex => (
+                                                    <div key={ex.ExerciseID} className="exercise-item">
+                                                        <span>{ex.Name}</span>
+                                                        <button 
+                                                            className="exercise-button"
+                                                            onClick={() => updateExerciseStatus(ex.ExerciseID, !ex.Completed)}>
+                                                            {ex.Completed ? "Mark as Incomplete" : "Mark as Complete"}
+                                                        </button>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <p>No exercises assigned.</p>
+                                            )}
                                         </td>
                                         <td>
-                                            {plan.meals?.map(meal => (
-                                                <div key={meal.MealID}>
-                                                    <span>{meal.Name}</span>
-                                                    <button onClick={() => updateMealStatus(meal.MealID, !meal.Completed)}>
-                                                        {meal.Completed ? "Mark as Incomplete" : "Mark as Complete"}
-                                                    </button>
-                                                </div>
-                                            ))}
+                                            {plan.meals && plan.meals.length > 0 ? (
+                                                plan.meals.map(meal => (
+                                                    <div key={meal.MealID} className="meal-item">
+                                                        <span>{meal.meal_name}</span>
+                                                        <button 
+                                                            className="meal-button"
+                                                            onClick={() => updateMealStatus(meal.MealID, !meal.Completed)}>
+                                                            {meal.Completed ? "Mark as Incomplete" : "Mark as Complete"}
+                                                        </button>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <p>No meals assigned.</p>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}

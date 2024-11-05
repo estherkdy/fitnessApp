@@ -53,15 +53,25 @@ ul {
 
 .exercise-button, .meal-button {
     margin-top: 5px;
-    padding: 6px;
+    padding: 8px 12px;
     font-size: 14px;
     cursor: pointer;
     border-radius: 5px;
-    background-color: #f7f7f7;
-    border: 1px solid #ddd;
+    color: #fff;
+    background-color: green;
+    border: 1px solid green;
     display: inline-block;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .exercise-button:hover, .meal-button:hover {
-    background-color: #e0e0e0;
+    background-color: #4CAF50; 
+    border-color: #4CAF50;
+}
+
+.exercise-status, .meal-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
 }

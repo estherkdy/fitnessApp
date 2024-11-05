@@ -56,18 +56,39 @@ def login():
 
 
 
-@app.route('/client/<int:client_id>/fitness_plan', methods=['GET', 'OPTIONS'])
+@app.route('/client/<int:client_id>/fitness_plan', methods=['GET'])
 @cross_origin(origin='*')
 def get_fitness_plan(client_id):
     connection = create_connection()
     cursor = connection.cursor(dictionary=True)
+
     cursor.execute("""
-        SELECT * FROM FitnessPlan
-        WHERE ClientID = %s
+        SELECT fp.PlanID, fp.Description, fp.EndDate
+        FROM FitnessPlan fp
+        WHERE fp.ClientID = %s
     """, (client_id,))
-    plans = cursor.fetchall()
+    fitness_plans = cursor.fetchall()
+
+    for plan in fitness_plans:
+        cursor.execute("""
+            SELECT e.ExerciseID, e.Name, e.Reps, e.Sets, e.CaloriesBurned, e.Completed
+            FROM Workout w
+            JOIN Exercise e ON w.WorkoutID = e.WorkoutID
+            WHERE w.PlanID = %s
+        """, (plan['PlanID'],))
+        plan['exercises'] = cursor.fetchall()
+
+        cursor.execute("""
+            SELECT m.MealID, m.meal_name, m.Calories, m.Protein, m.Carbs, m.Fat, m.Completed
+            FROM Diet d
+            JOIN Meal m ON d.DietID = m.DietID
+            WHERE d.PlanID = %s
+        """, (plan['PlanID'],))
+        plan['meals'] = cursor.fetchall()
+
     close_connection(connection)
-    return jsonify(plans)
+    return jsonify(fitness_plans)
+
 
 @app.route('/client/<int:client_id>/trainer', methods=['GET', 'OPTIONS'])
 @cross_origin(origin='*')
@@ -272,4 +293,3 @@ def apply_cors(response):
 
 if __name__ == '__main__':
     app.run(debug=True)
-
