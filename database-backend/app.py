@@ -173,18 +173,77 @@ def delete_client_account(client_id):
 
 @app.route('/trainer/<int:trainer_id>/clients', methods=['GET', 'OPTIONS'])
 @cross_origin(origin='*')
-def view_clients(trainer_id):
+def view_clients_with_details(trainer_id):
     connection = create_connection()
     cursor = connection.cursor(dictionary=True)
+    
+    # Fetch clients assigned to the trainer
     cursor.execute("""
-        SELECT * FROM Client
-        WHERE client_id IN (
+        SELECT c.client_id, c.FirstName, c.LastName, c.height, c.weight, c.age, c.Email
+        FROM Client c
+        WHERE c.client_id IN (
             SELECT ClientID FROM FitnessPlan WHERE TrainerID = %s
         )
     """, (trainer_id,))
     clients = cursor.fetchall()
+
+    for client in clients:
+        client_id = client['client_id']
+
+        # Fetch fitness plans for the client
+        cursor.execute("""
+            SELECT PlanID, Description, StartDate, EndDate
+            FROM FitnessPlan
+            WHERE ClientID = %s AND TrainerID = %s
+        """, (client_id, trainer_id))
+        fitness_plans = cursor.fetchall()
+
+        for plan in fitness_plans:
+            plan_id = plan['PlanID']
+
+            # Fetch workouts and exercises under this plan
+            cursor.execute("""
+                SELECT w.WorkoutID, w.Name AS WorkoutName, w.Duration
+                FROM Workout w
+                WHERE w.PlanID = %s
+            """, (plan_id,))
+            workouts = cursor.fetchall()
+
+            for workout in workouts:
+                workout_id = workout['WorkoutID']
+                cursor.execute("""
+                    SELECT e.Name AS ExerciseName, e.Reps, e.Sets, e.CaloriesBurned, e.Completed
+                    FROM Exercise e
+                    WHERE e.WorkoutID = %s
+                """, (workout_id,))
+                workout['exercises'] = cursor.fetchall()
+
+            plan['workouts'] = workouts
+
+            # Fetch diets and meals under this plan
+            cursor.execute("""
+                SELECT d.DietID, d.diet_name
+                FROM Diet d
+                WHERE d.PlanID = %s
+            """, (plan_id,))
+            diets = cursor.fetchall()
+
+            for diet in diets:
+                diet_id = diet['DietID']
+                cursor.execute("""
+                    SELECT m.meal_name, m.Calories, m.Protein, m.Carbs, m.Fat, m.Completed
+                    FROM Meal m
+                    WHERE m.DietID = %s
+                """, (diet_id,))
+                diet['meals'] = cursor.fetchall()
+
+            plan['diets'] = diets
+
+        client['fitness_plans'] = fitness_plans
+
     close_connection(connection)
     return jsonify(clients)
+
 
 @app.route('/trainer/<int:trainer_id>/fitness_plans', methods=['GET', 'OPTIONS'])
 @cross_origin(origin='*')
@@ -282,6 +341,44 @@ def signup():
     close_connection(connection)
     
     return jsonify({"message": "Sign up successful!"}), 201
+
+@app.route('/trainer/<int:trainer_id>/unassigned_clients', methods=['GET'])
+@cross_origin(origin='*')
+def view_unassigned_clients(trainer_id):
+    connection = create_connection()
+    cursor = connection.cursor(dictionary=True)
+    
+    cursor.execute("""
+        SELECT c.client_id, c.FirstName, c.LastName, c.height, c.weight, c.age, c.Email
+        FROM Client c
+        WHERE c.client_id NOT IN (
+            SELECT ClientID FROM FitnessPlan WHERE TrainerID IS NOT NULL
+        )
+    """)
+    unassigned_clients = cursor.fetchall()
+    close_connection(connection)
+    return jsonify(unassigned_clients)
+
+@app.route('/trainer/<int:trainer_id>/assign_client', methods=['POST'])
+@cross_origin(origin='*')
+def assign_client_to_trainer(trainer_id):
+    data = request.json
+    client_id = data.get('client_id')
+
+    if not client_id:
+        return jsonify({"error": "Missing client_id"}), 400
+
+    connection = create_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        INSERT INTO FitnessPlan (ClientID, TrainerID, StartDate, Description)
+        VALUES (%s, %s, CURDATE(), 'New Fitness Plan')
+    """, (client_id, trainer_id))
+    connection.commit()
+    close_connection(connection)
+    return jsonify({"message": "Client successfully assigned to trainer"}), 201
+
 
 @app.after_request
 def apply_cors(response):

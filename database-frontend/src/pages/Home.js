@@ -13,6 +13,7 @@ function Home() {
             <div className="login-buttons">
                 <button onClick={() => navigate('/clientlogin')}>Client Login</button>
                 <button onClick={() => navigate('/trainerlogin')}>Trainer Login</button>
+                <button onClick={() => navigate('/adminlogin')}>Admin Login</button>  
             </div>
             <p>Don't have an account?</p>
             <Link to='/signup' className="signup-link">Sign Up</Link>
