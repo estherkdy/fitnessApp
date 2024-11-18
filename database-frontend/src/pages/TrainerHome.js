@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './TrainerHome.css';
 
-
 function TrainerHome() {
     const navigate = useNavigate();
     const [clients, setClients] = useState([]);
@@ -14,16 +13,19 @@ function TrainerHome() {
     const [plansFetched, setPlansFetched] = useState(false);
     const [clientsFetched, setClientsFetched] = useState(false);
     const [editingPlanId, setEditingPlanId] = useState(null); 
-    const [newDescription, setNewDescription] = useState(""); 
+    const [newDescription, setNewDescription] = useState("");
+    const [expandedClientId, setExpandedClientId] = useState(null); // For collapsible client details
+    const [unassignedClients, setUnassignedClients] = useState([]);
+    const [unassignedFetched, setUnassignedFetched] = useState(false);
+    const [selectedUnassignedClient, setSelectedUnassignedClient] = useState(null);
 
     const trainerId = localStorage.getItem('trainerID'); 
 
     const viewClients = async () => {
         if (clientsFetched) {
-            setClientsFetched(false)
-            setClients([])
-        }
-        else {
+            setClientsFetched(false);
+            setClients([]);
+        } else {
             setClientsFetched(true);
             try {
                 const response = await axios.get(`/trainer/${trainerId}/clients`);
@@ -34,12 +36,47 @@ function TrainerHome() {
         }
     };
 
+    const toggleClientDetails = (clientId) => {
+        setExpandedClientId(expandedClientId === clientId ? null : clientId);
+    };
+
+    const viewUnassignedClients = async () => {
+        if (unassignedFetched) {
+            setUnassignedFetched(false);
+            setUnassignedClients([]);
+        } else {
+            setUnassignedFetched(true);
+            try {
+                const response = await axios.get(`/trainer/${trainerId}/unassigned_clients`);
+                setUnassignedClients(response.data);
+            } catch (error) {
+                console.error('Error fetching unassigned clients:', error);
+            }
+        }
+    };
+
+    const assignClient = async () => {
+        if (!selectedUnassignedClient) {
+            alert('Please select a client to assign.');
+            return;
+        }
+        try {
+            const response = await axios.post(`/trainer/${trainerId}/assign_client`, {
+                client_id: selectedUnassignedClient,
+            });
+            alert(response.data.message);
+            setSelectedUnassignedClient(null);
+            viewUnassignedClients(); // Refresh unassigned clients
+        } catch (error) {
+            console.error('Error assigning client:', error);
+        }
+    };
+
     const viewFitnessPlans = async () => {
         if (plansFetched) {
             setPlansFetched(false);
-            setFitnessPlans([])
-        }
-        else {
+            setFitnessPlans([]);
+        } else {
             setPlansFetched(true);
             try {
                 const response = await axios.get(`/trainer/${trainerId}/fitness_plans`);
@@ -97,9 +134,13 @@ function TrainerHome() {
 
     return (
         <div className="home">
-            <div className='button-box'>
-                <button className="logout-button" onClick={() => navigate('/')}>Log Out</button>
-                <button className='update-button' onClick={() => navigate('/trainerupdate')}>Update Profile</button>
+            <div className="button-box">
+                <button className="logout-button" onClick={() => navigate('/')}>
+                    Log Out
+                </button>
+                <button className="update-button" onClick={() => navigate('/trainerupdate')}>
+                    Update Profile
+                </button>
             </div>
             <h1>Trainer Home Page</h1>
 
@@ -109,16 +150,96 @@ function TrainerHome() {
                 clients.length > 0 ? (
                     <div>
                         <h2>Clients</h2>
-                        <ul>
-                            {clients.map(client => (
-                                <li key={client.client_id}>
-                                    {client.FirstName} {client.LastName} - ID: {client.client_id}
-                                </li>
-                            ))}
-                        </ul>
+                        {clients.map((client) => (
+                            <div key={client.client_id} className="client-details">
+                                <h3>{client.FirstName} {client.LastName}</h3>
+                                <p>Email: {client.Email}</p>
+                                <p>Age: {client.age} years</p>
+                                <p>Height: {client.height} cm</p>
+                                <p>Weight: {client.weight} kg</p>
+
+                                <button onClick={() => toggleClientDetails(client.client_id)}>
+                                    {expandedClientId === client.client_id ? 'Hide Details' : 'Show Details'}
+                                </button>
+
+                                {expandedClientId === client.client_id && (
+                                    <div className="client-expanded-details">
+                                        {client.fitness_plans && client.fitness_plans.length > 0 ? (
+                                            client.fitness_plans.map((plan, index) => (
+                                                <div key={index} className="fitness-plan">
+                                                    <h4>Fitness Plan: {plan.Description}</h4>
+                                                    <p>Start Date: {plan.StartDate}</p>
+                                                    <p>End Date: {plan.EndDate || 'Ongoing'}</p>
+                                                    <h5>Workouts</h5>
+                                                    {plan.workouts && plan.workouts.length > 0 ? (
+                                                        plan.workouts.map((workout, wIndex) => (
+                                                            <div key={wIndex} className="workout">
+                                                                <p>{workout.WorkoutName} - {workout.Duration} mins</p>
+                                                                <ul>
+                                                                    {workout.exercises.map((exercise, eIndex) => (
+                                                                        <li key={eIndex}>
+                                                                            {exercise.ExerciseName} - {exercise.Reps} reps, {exercise.Sets} sets, {exercise.CaloriesBurned} cal, {exercise.Completed ? 'Completed' : 'Incomplete'}
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <p>No workouts assigned.</p>
+                                                    )}
+                                                    <h5>Meals</h5>
+                                                    {plan.diets && plan.diets.length > 0 ? (
+                                                        plan.diets.map((diet, dIndex) => (
+                                                            <div key={dIndex} className="diet">
+                                                                <p>Diet: {diet.diet_name}</p>
+                                                                <ul>
+                                                                    {diet.meals.map((meal, mIndex) => (
+                                                                        <li key={mIndex}>
+                                                                            {meal.meal_name} - {meal.Calories} cal, Protein: {meal.Protein}g, Carbs: {meal.Carbs}g, Fat: {meal.Fat}g, {meal.Completed ? 'Completed' : 'Incomplete'}
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <p>No meals assigned.</p>
+                                                    )}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p>No fitness plans found.</p>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
                     </div>
                 ) : (
                     <p>No clients found.</p>
+                )
+            )}
+
+            {/* View Unassigned Clients */}
+            <button onClick={viewUnassignedClients}>View Unassigned Clients</button>
+            {unassignedFetched && (
+                unassignedClients.length > 0 ? (
+                    <div>
+                        <h2>Unassigned Clients</h2>
+                        <select
+                            onChange={(e) => setSelectedUnassignedClient(e.target.value)}
+                            value={selectedUnassignedClient || ""}
+                        >
+                            <option value="" disabled>Select a client</option>
+                            {unassignedClients.map(client => (
+                                <option key={client.client_id} value={client.client_id}>
+                                    {client.FirstName} {client.LastName} ({client.Email})
+                                </option>
+                            ))}
+                        </select>
+                        <button onClick={assignClient}>Assign Client</button>
+                    </div>
+                ) : (
+                    <p>No unassigned clients found.</p>
                 )
             )}
 
@@ -198,7 +319,9 @@ function TrainerHome() {
             <button onClick={sendReminder}>Send Reminder</button>
 
             {/* Delete Account */}
-            <button className='delete-button' Click={deleteAccount}>Delete Account</button>
+            <button className="delete-button" onClick={deleteAccount}>
+                Delete Account
+            </button>
         </div>
     );
 }
