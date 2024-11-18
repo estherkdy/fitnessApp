@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './Login.css'
 
 function TrainerLogin() {
     const navigate = useNavigate();
@@ -38,10 +39,9 @@ function TrainerLogin() {
     const disabled = !email || !password;
 
     return (
-        <div className="login-container">
-            <button title="Back" onClick={() => navigate(-1)}>Back</button>
+        <div>
+            <button className='back-button' title="Back" onClick={() => navigate(-1)}>Back</button>
             <h1>Trainer Login</h1>
-            
             <div className="input-row">
                 <input 
                     type="text" 
@@ -59,10 +59,7 @@ function TrainerLogin() {
                     placeholder="Password"
                 />
             </div>
-
-            <div className="input-row">
-                <button disabled={disabled} onClick={handleLogin}>Log In</button>
-            </div>
+            <button disabled={disabled} onClick={handleLogin}>Log In</button>
         </div>
     );
 }

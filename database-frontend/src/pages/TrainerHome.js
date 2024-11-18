@@ -19,22 +19,34 @@ function TrainerHome() {
     const trainerId = localStorage.getItem('trainerID'); 
 
     const viewClients = async () => {
-        setClientsFetched(true);
-        try {
-            const response = await axios.get(`/trainer/${trainerId}/clients`);
-            setClients(response.data);
-        } catch (error) {
-            console.error('Error fetching clients:', error);
+        if (clientsFetched) {
+            setClientsFetched(false)
+            setClients([])
+        }
+        else {
+            setClientsFetched(true);
+            try {
+                const response = await axios.get(`/trainer/${trainerId}/clients`);
+                setClients(response.data);
+            } catch (error) {
+                console.error('Error fetching clients:', error);
+            }
         }
     };
 
     const viewFitnessPlans = async () => {
-        setPlansFetched(true);
-        try {
-            const response = await axios.get(`/trainer/${trainerId}/fitness_plans`);
-            setFitnessPlans(response.data);
-        } catch (error) {
-            console.error('Error fetching fitness plans:', error);
+        if (plansFetched) {
+            setPlansFetched(false);
+            setFitnessPlans([])
+        }
+        else {
+            setPlansFetched(true);
+            try {
+                const response = await axios.get(`/trainer/${trainerId}/fitness_plans`);
+                setFitnessPlans(response.data);
+            } catch (error) {
+                console.error('Error fetching fitness plans:', error);
+            }
         }
     };
 
@@ -85,7 +97,10 @@ function TrainerHome() {
 
     return (
         <div className="home">
-            <button onClick={() => navigate('/')}>Home</button>
+            <div className='button-box'>
+                <button className="logout-button" onClick={() => navigate('/')}>Log Out</button>
+                <button className='update-button' onClick={() => navigate('/trainerupdate')}>Update Profile</button>
+            </div>
             <h1>Trainer Home Page</h1>
 
             {/* View Clients */}
@@ -183,7 +198,7 @@ function TrainerHome() {
             <button onClick={sendReminder}>Send Reminder</button>
 
             {/* Delete Account */}
-            <button onClick={deleteAccount}>Delete Account</button>
+            <button className='delete-button' Click={deleteAccount}>Delete Account</button>
         </div>
     );
 }

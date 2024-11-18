@@ -16,23 +16,35 @@ function ClientHome() {
     const clientId = localStorage.getItem('clientId'); 
 
     const getTrainer = async () => {
-        setTrainerFetched(true);
-        try {
-            const response = await axios.get(`/client/${clientId}/trainer`);
-            setTrainerInfo(response.data);
-        } catch (error) {
-            console.error('Error fetching trainer info:', error);
+        if (trainerFetched) {
+            setTrainerFetched(false);
+            setTrainerInfo(null)
+        }
+        else {
+            setTrainerFetched(true);
+            try {
+                const response = await axios.get(`/client/${clientId}/trainer`);
+                setTrainerInfo(response.data);
+            } catch (error) {
+                console.error('Error fetching trainer info:', error);
+            }
         }
     };
 
     const viewFitnessPlan = async () => {
-        setFitnessPlanFetched(true);
-        try {
-            const response = await axios.get(`/client/${clientId}/fitness_plan`);
-            setFitnessPlan(response.data);
-            console.log("Fetched Fitness Plan:", response.data); // Log to verify data structure
-        } catch (error) {
-            console.error('Error fetching fitness plan:', error);
+        if (fitnessPlanFetched) {
+            setFitnessPlanFetched(false)
+            setFitnessPlan([])
+        }
+        else {
+            setFitnessPlanFetched(true);
+            try {
+                const response = await axios.get(`/client/${clientId}/fitness_plan`);
+                setFitnessPlan(response.data);
+                console.log("Fetched Fitness Plan:", response.data); // Log to verify data structure
+            } catch (error) {
+                console.error('Error fetching fitness plan:', error);
+            }
         }
     };
 
@@ -43,7 +55,14 @@ function ClientHome() {
                 completed: completed
             });
             console.log(`Exercise status updated to ${completed ? 'Complete' : 'Incomplete'}`);
-            viewFitnessPlan(); // Refresh fitness plan to show updated status
+            setFitnessPlanFetched(true);
+            try {
+                const response = await axios.get(`/client/${clientId}/fitness_plan`);
+                setFitnessPlan(response.data);
+                console.log("Fetched Fitness Plan:", response.data); // Log to verify data structure
+            } catch (error) {
+                console.error('Error fetching fitness plan:', error);
+            } // Refresh fitness plan to show updated status
         } catch (error) {
             console.error('Error updating exercise status:', error);
         }
@@ -56,19 +75,32 @@ function ClientHome() {
                 completed: completed
             });
             console.log(`Meal status updated to ${completed ? 'Complete' : 'Incomplete'}`);
-            viewFitnessPlan(); // Refresh fitness plan to show updated status
+            setFitnessPlanFetched(true);
+            try {
+                const response = await axios.get(`/client/${clientId}/fitness_plan`);
+                setFitnessPlan(response.data);
+                console.log("Fetched Fitness Plan:", response.data); // Log to verify data structure
+            } catch (error) {
+                console.error('Error fetching fitness plan:', error);
+            } // Refresh fitness plan to show updated status
         } catch (error) {
             console.error('Error updating meal status:', error);
         }
     };
 
     const checkReminders = async () => {
-        setRemindersFetched(true);
-        try {
-            const response = await axios.get(`/client/${clientId}/reminders`);
-            setReminders(response.data);
-        } catch (error) {
-            console.error('Error fetching reminders:', error);
+        if (remindersFetched) {
+            setRemindersFetched(false);
+            setReminders([])
+        }
+        else {
+            setRemindersFetched(true);
+            try {
+                const response = await axios.get(`/client/${clientId}/reminders`);
+                setReminders(response.data);
+            } catch (error) {
+                console.error('Error fetching reminders:', error);
+            }
         }
     };
 
@@ -85,7 +117,10 @@ function ClientHome() {
 
     return (
         <div className="home">
-            <button onClick={() => navigate('/')}>Home</button>
+            <div className='button-box'>
+                <button className="logout-button" onClick={() => navigate('/')}>Log Out</button>
+                <button className='update-button' onClick={() => navigate('/clientupdate')}>Update Profile</button>
+            </div>
             <h1>Client Home Page</h1>
 
             {/* Trainer Info */}
@@ -96,11 +131,10 @@ function ClientHome() {
                         <h2>Trainer Information</h2>
                         <table>
                             <thead>
-                                <tr><th>ID</th><th>Name</th><th>Specialty</th></tr>
+                                <tr><th>Name</th><th>Specialty</th></tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>{trainerInfo.TrainerID}</td>
                                     <td>{trainerInfo.FirstName} {trainerInfo.LastName}</td>
                                     <td>{trainerInfo.Specialty}</td>
                                 </tr>
@@ -121,7 +155,6 @@ function ClientHome() {
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Plan ID</th>
                                     <th>Description</th>
                                     <th>End Date</th>
                                     <th>Exercises</th>
@@ -131,7 +164,6 @@ function ClientHome() {
                             <tbody>
                                 {fitnessPlan.map((plan, index) => (
                                     <tr key={index}>
-                                        <td>{plan.PlanID}</td>
                                         <td>{plan.Description}</td>
                                         <td>{plan.EndDate}</td>
                                         <td>
@@ -196,7 +228,7 @@ function ClientHome() {
             )}
 
             {/* Delete Account */}
-            <button onClick={deleteAccount}>Delete Account</button>
+            <button className='delete-button' onClick={deleteAccount}>Delete Account</button>
         </div>
     );
 }

@@ -8,6 +8,8 @@ import SignUp from './pages/SignUp';
 import ClientHome from './pages/ClientHome';
 import TrainerHome from './pages/TrainerHome';
 import './App.css';
+import ClientUpdate from './pages/ClientUpdate';
+import TrainerUpdate from './pages/TrainerUpdate';
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/clienthome" element={<ClientHome />} />
           <Route path="/trainerhome" element={<TrainerHome />} />
+          <Route path="/trainerupdate" element={<TrainerUpdate />} />
+          <Route path="/clientupdate" element={<ClientUpdate />} />
         </Routes>
       </div>
     </Router>

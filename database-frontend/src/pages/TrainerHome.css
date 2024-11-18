@@ -58,3 +58,146 @@ input[type="text"], input[type="date"], select {
 ul {
     padding-left: 20px;
 }
+
+/* ClientHome.css */
+
+.home {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+h1, h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logout-button {
+    position: 'relative';
+    width: 20%;
+    background-color: red;
+    color: #fff;
+    border: 1px solid red;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+    z-index: 1000;
+}
+
+.logout-button:hover {
+    background-color: darkred;
+    border-color: darkred;
+    color: white;
+}
+
+button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #28a745;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    color: green;
+}
+
+ul {
+    padding-left: 20px;
+}
+
+.exercise-button, .meal-button {
+    margin-top: 5px;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    color: #fff;
+    background-color: green;
+    border: 1px solid green;
+    display: inline-block;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.exercise-button:hover, .meal-button:hover {
+    background-color: #4CAF50; 
+    border-color: #4CAF50;
+}
+
+.exercise-status, .meal-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.delete-button {
+    width: 25%;
+    background-color: red;
+    color: #fff;
+    border: 1px solid red;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    left: 37.5%;
+    position: relative;
+}
+
+.delete-button:hover {
+    background-color: darkred;
+    border-color: darkred;
+    color: white;
+}
+
+.update-button {
+    position: 'relative';
+    width: 25%;
+    margin-left: 60%;
+    background-color: blue;
+    color: #fff;
+    border: 1px solid blue;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+    z-index: 1000;
+}
+
+.update-button:hover {
+    background-color: darkblue;
+    border-color: darkblue;
+    color: white;
+}
+
+.button-box {
+    display: flex;
+    flex-direction: row;
+}

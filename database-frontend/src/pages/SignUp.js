@@ -46,7 +46,9 @@ function SignUp() {
     };
     
     const handleSignUp = async () => {
+        console.log('Sign up button clicked');
         if (password === confirmPassword) {
+            console.log('Passwords match');
             setConfirmPasswordText('Confirm your password:');
             setIsError(false);
     
@@ -57,24 +59,25 @@ function SignUp() {
                 password,
                 user_type: userType,
                 ...(userType === 'client' && { height, weight, age }),
-                ...(userType === 'trainer' && { specialty: "Fitness" })
+                ...(userType === 'trainer' && { specialty: "Fitness" }),
             };
     
             try {
+                console.log('Sending data:', userData);
                 const response = await axios.post('/signup', userData, { withCredentials: true });
+                console.log('Response:', response.data);
                 if (userType === 'client') {
                     navigate('/clienthome');
                 } else {
                     navigate('/trainerhome');
                 }
-                console.log(response.data.message);
             } catch (error) {
                 console.error("Sign-up error: ", error);
             }
         } else {
+            console.log("Passwords don't match");
             setConfirmPasswordText("Passwords don't match");
             setIsError(true);
-            console.log('Sign up unsuccessful');
         }
     };
 
@@ -82,7 +85,7 @@ function SignUp() {
 
     return (
         <div>
-            <button title="Back" onClick={() => navigate(-1)}>Back</button>
+            <button className='back-button' title="Back" onClick={() => navigate(-1)}>Back</button>
             <h1>Sign Up</h1>
             <div>
                 <label htmlFor="firstNameInput">First Name:</label>
