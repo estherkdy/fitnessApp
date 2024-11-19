@@ -14,12 +14,11 @@ function TrainerHome() {
     const [clientsFetched, setClientsFetched] = useState(false);
     const [editingPlanId, setEditingPlanId] = useState(null); 
     const [newDescription, setNewDescription] = useState("");
-    const [expandedClientId, setExpandedClientId] = useState(null); // For collapsible client details
     const [unassignedClients, setUnassignedClients] = useState([]);
     const [unassignedFetched, setUnassignedFetched] = useState(false);
     const [selectedUnassignedClient, setSelectedUnassignedClient] = useState(null);
 
-    const trainerId = localStorage.getItem('trainerID'); 
+    const trainerId = localStorage.getItem('trainerID');
 
     const viewClients = async () => {
         if (clientsFetched) {
@@ -34,10 +33,6 @@ function TrainerHome() {
                 console.error('Error fetching clients:', error);
             }
         }
-    };
-
-    const toggleClientDetails = (clientId) => {
-        setExpandedClientId(expandedClientId === clientId ? null : clientId);
     };
 
     const viewUnassignedClients = async () => {
@@ -150,67 +145,13 @@ function TrainerHome() {
                 clients.length > 0 ? (
                     <div>
                         <h2>Clients</h2>
-                        {clients.map((client) => (
+                        {clients.map(client => (
                             <div key={client.client_id} className="client-details">
                                 <h3>{client.FirstName} {client.LastName}</h3>
                                 <p>Email: {client.Email}</p>
                                 <p>Age: {client.age} years</p>
                                 <p>Height: {client.height} cm</p>
                                 <p>Weight: {client.weight} kg</p>
-
-                                <button onClick={() => toggleClientDetails(client.client_id)}>
-                                    {expandedClientId === client.client_id ? 'Hide Details' : 'Show Details'}
-                                </button>
-
-                                {expandedClientId === client.client_id && (
-                                    <div className="client-expanded-details">
-                                        {client.fitness_plans && client.fitness_plans.length > 0 ? (
-                                            client.fitness_plans.map((plan, index) => (
-                                                <div key={index} className="fitness-plan">
-                                                    <h4>Fitness Plan: {plan.Description}</h4>
-                                                    <p>Start Date: {plan.StartDate}</p>
-                                                    <p>End Date: {plan.EndDate || 'Ongoing'}</p>
-                                                    <h5>Workouts</h5>
-                                                    {plan.workouts && plan.workouts.length > 0 ? (
-                                                        plan.workouts.map((workout, wIndex) => (
-                                                            <div key={wIndex} className="workout">
-                                                                <p>{workout.WorkoutName} - {workout.Duration} mins</p>
-                                                                <ul>
-                                                                    {workout.exercises.map((exercise, eIndex) => (
-                                                                        <li key={eIndex}>
-                                                                            {exercise.ExerciseName} - {exercise.Reps} reps, {exercise.Sets} sets, {exercise.CaloriesBurned} cal, {exercise.Completed ? 'Completed' : 'Incomplete'}
-                                                                        </li>
-                                                                    ))}
-                                                                </ul>
-                                                            </div>
-                                                        ))
-                                                    ) : (
-                                                        <p>No workouts assigned.</p>
-                                                    )}
-                                                    <h5>Meals</h5>
-                                                    {plan.diets && plan.diets.length > 0 ? (
-                                                        plan.diets.map((diet, dIndex) => (
-                                                            <div key={dIndex} className="diet">
-                                                                <p>Diet: {diet.diet_name}</p>
-                                                                <ul>
-                                                                    {diet.meals.map((meal, mIndex) => (
-                                                                        <li key={mIndex}>
-                                                                            {meal.meal_name} - {meal.Calories} cal, Protein: {meal.Protein}g, Carbs: {meal.Carbs}g, Fat: {meal.Fat}g, {meal.Completed ? 'Completed' : 'Incomplete'}
-                                                                        </li>
-                                                                    ))}
-                                                                </ul>
-                                                            </div>
-                                                        ))
-                                                    ) : (
-                                                        <p>No meals assigned.</p>
-                                                    )}
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <p>No fitness plans found.</p>
-                                        )}
-                                    </div>
-                                )}
                             </div>
                         ))}
                     </div>
@@ -249,46 +190,46 @@ function TrainerHome() {
                 fitnessPlans.length > 0 ? (
                     <div>
                         <h2>Fitness Plans</h2>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Plan ID</th>
-                                    <th>Client ID</th>
-                                    <th>Description</th>
-                                    <th>End Date</th>
-                                    <th>Update Plan</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {fitnessPlans.map(plan => (
-                                    <tr key={plan.PlanID}>
-                                        <td>{plan.PlanID}</td>
-                                        <td>{plan.ClientID}</td>
-                                        <td>
-                                            {editingPlanId === plan.PlanID ? (
-                                                <input
-                                                    type="text"
-                                                    value={newDescription}
-                                                    onChange={(e) => setNewDescription(e.target.value)}
-                                                />
-                                            ) : (
-                                                plan.Description
-                                            )}
-                                        </td>
-                                        <td>{plan.EndDate}</td>
-                                        <td>
-                                            {editingPlanId === plan.PlanID ? (
-                                                <button onClick={submitDescriptionUpdate}>Submit</button>
-                                            ) : (
-                                                <button onClick={() => startEditingPlan(plan.PlanID, plan.Description)}>
-                                                    Update
-                                                </button>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                        {fitnessPlans.map(plan => (
+                            <div key={plan.PlanID} className="fitness-plan">
+                                <h4>Description: {plan.Description}</h4>
+                                <p>End Date: {plan.EndDate || 'Ongoing'}</p>
+                                <h5>Workouts</h5>
+                                {plan.workouts && plan.workouts.length > 0 ? (
+                                    plan.workouts.map((workout, wIndex) => (
+                                        <div key={wIndex} className="workout">
+                                            <p>{workout.WorkoutName} - {workout.Duration} mins</p>
+                                            <ul>
+                                                {workout.exercises.map((exercise, eIndex) => (
+                                                    <li key={eIndex}>
+                                                        {exercise.ExerciseName} - {exercise.Reps} reps, {exercise.Sets} sets, {exercise.CaloriesBurned} cal, {exercise.Completed ? 'Completed' : 'Incomplete'}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>No workouts assigned.</p>
+                                )}
+                                <h5>Meals</h5>
+                                {plan.diets && plan.diets.length > 0 ? (
+                                    plan.diets.map((diet, dIndex) => (
+                                        <div key={dIndex} className="diet">
+                                            <p>Diet: {diet.diet_name}</p>
+                                            <ul>
+                                                {diet.meals.map((meal, mIndex) => (
+                                                    <li key={mIndex}>
+                                                        {meal.meal_name} - {meal.Calories} cal, Protein: {meal.Protein}g, Carbs: {meal.Carbs}g, Fat: {meal.Fat}g, {meal.Completed ? 'Completed' : 'Incomplete'}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>No meals assigned.</p>
+                                )}
+                            </div>
+                        ))}
                     </div>
                 ) : (
                     <p>No fitness plans found.</p>

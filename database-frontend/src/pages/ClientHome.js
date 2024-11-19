@@ -2,25 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './ClientHome.css';
+import ClientLog from './ClientLog';
 
 function ClientHome() {
     const navigate = useNavigate();
     const [trainerInfo, setTrainerInfo] = useState(null);
     const [fitnessPlan, setFitnessPlan] = useState([]);
     const [reminders, setReminders] = useState([]);
-    
+
     const [trainerFetched, setTrainerFetched] = useState(false);
     const [fitnessPlanFetched, setFitnessPlanFetched] = useState(false);
     const [remindersFetched, setRemindersFetched] = useState(false);
 
-    const clientId = localStorage.getItem('clientId'); 
+    const clientId = localStorage.getItem('clientId');
 
     const getTrainer = async () => {
         if (trainerFetched) {
             setTrainerFetched(false);
-            setTrainerInfo(null)
-        }
-        else {
+            setTrainerInfo(null);
+        } else {
             setTrainerFetched(true);
             try {
                 const response = await axios.get(`/client/${clientId}/trainer`);
@@ -33,15 +33,13 @@ function ClientHome() {
 
     const viewFitnessPlan = async () => {
         if (fitnessPlanFetched) {
-            setFitnessPlanFetched(false)
-            setFitnessPlan([])
-        }
-        else {
+            setFitnessPlanFetched(false);
+            setFitnessPlan([]);
+        } else {
             setFitnessPlanFetched(true);
             try {
                 const response = await axios.get(`/client/${clientId}/fitness_plan`);
                 setFitnessPlan(response.data);
-                console.log("Fetched Fitness Plan:", response.data); // Log to verify data structure
             } catch (error) {
                 console.error('Error fetching fitness plan:', error);
             }
@@ -54,15 +52,7 @@ function ClientHome() {
                 exercise_id: exerciseId,
                 completed: completed
             });
-            console.log(`Exercise status updated to ${completed ? 'Complete' : 'Incomplete'}`);
-            setFitnessPlanFetched(true);
-            try {
-                const response = await axios.get(`/client/${clientId}/fitness_plan`);
-                setFitnessPlan(response.data);
-                console.log("Fetched Fitness Plan:", response.data); // Log to verify data structure
-            } catch (error) {
-                console.error('Error fetching fitness plan:', error);
-            } // Refresh fitness plan to show updated status
+            viewFitnessPlan(); // Refresh fitness plan data
         } catch (error) {
             console.error('Error updating exercise status:', error);
         }
@@ -74,15 +64,7 @@ function ClientHome() {
                 meal_id: mealId,
                 completed: completed
             });
-            console.log(`Meal status updated to ${completed ? 'Complete' : 'Incomplete'}`);
-            setFitnessPlanFetched(true);
-            try {
-                const response = await axios.get(`/client/${clientId}/fitness_plan`);
-                setFitnessPlan(response.data);
-                console.log("Fetched Fitness Plan:", response.data); // Log to verify data structure
-            } catch (error) {
-                console.error('Error fetching fitness plan:', error);
-            } // Refresh fitness plan to show updated status
+            viewFitnessPlan(); // Refresh fitness plan data
         } catch (error) {
             console.error('Error updating meal status:', error);
         }
@@ -91,9 +73,8 @@ function ClientHome() {
     const checkReminders = async () => {
         if (remindersFetched) {
             setRemindersFetched(false);
-            setReminders([])
-        }
-        else {
+            setReminders([]);
+        } else {
             setRemindersFetched(true);
             try {
                 const response = await axios.get(`/client/${clientId}/reminders`);
@@ -101,6 +82,18 @@ function ClientHome() {
             } catch (error) {
                 console.error('Error fetching reminders:', error);
             }
+        }
+    };
+
+    const markReminderComplete = async (reminderId) => {
+        try {
+            await axios.patch(`/client/${clientId}/update_reminder`, {
+                reminder_id: reminderId,
+                completed: true
+            });
+            checkReminders(); // Refresh reminders
+        } catch (error) {
+            console.error('Error marking reminder as complete:', error);
         }
     };
 
@@ -117,9 +110,9 @@ function ClientHome() {
 
     return (
         <div className="home">
-            <div className='button-box'>
+            <div className="button-box">
                 <button className="logout-button" onClick={() => navigate('/')}>Log Out</button>
-                <button className='update-button' onClick={() => navigate('/clientupdate')}>Update Profile</button>
+                <button className="update-button" onClick={() => navigate('/clientupdate')}>Update Profile</button>
             </div>
             <h1>Client Home Page</h1>
 
@@ -129,106 +122,75 @@ function ClientHome() {
                 trainerInfo ? (
                     <div>
                         <h2>Trainer Information</h2>
-                        <table>
-                            <thead>
-                                <tr><th>Name</th><th>Specialty</th></tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>{trainerInfo.FirstName} {trainerInfo.LastName}</td>
-                                    <td>{trainerInfo.Specialty}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <p>{trainerInfo.FirstName} {trainerInfo.LastName} ({trainerInfo.Specialty})</p>
                     </div>
                 ) : (
                     <p>No trainer assigned.</p>
                 )
             )}
+            <ClientLog />
 
-            {/* Fitness Plan with Update Buttons for Exercises and Meals */}
+            {/* Fitness Plan */}
             <button onClick={viewFitnessPlan}>View Fitness Plan</button>
-            {fitnessPlanFetched && (
-                fitnessPlan.length > 0 ? (
-                    <div>
-                        <h2>Fitness Plan</h2>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Description</th>
-                                    <th>End Date</th>
-                                    <th>Exercises</th>
-                                    <th>Meals</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {fitnessPlan.map((plan, index) => (
-                                    <tr key={index}>
-                                        <td>{plan.Description}</td>
-                                        <td>{plan.EndDate}</td>
-                                        <td>
-                                            {plan.exercises && plan.exercises.length > 0 ? (
-                                                plan.exercises.map(ex => (
-                                                    <div key={ex.ExerciseID} className="exercise-item">
-                                                        <span>{ex.Name}</span>
-                                                        <button 
-                                                            className="exercise-button"
-                                                            onClick={() => updateExerciseStatus(ex.ExerciseID, !ex.Completed)}>
-                                                            {ex.Completed ? "Mark as Incomplete" : "Mark as Complete"}
-                                                        </button>
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <p>No exercises assigned.</p>
-                                            )}
-                                        </td>
-                                        <td>
-                                            {plan.meals && plan.meals.length > 0 ? (
-                                                plan.meals.map(meal => (
-                                                    <div key={meal.MealID} className="meal-item">
-                                                        <span>{meal.meal_name}</span>
-                                                        <button 
-                                                            className="meal-button"
-                                                            onClick={() => updateMealStatus(meal.MealID, !meal.Completed)}>
-                                                            {meal.Completed ? "Mark as Incomplete" : "Mark as Complete"}
-                                                        </button>
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <p>No meals assigned.</p>
-                                            )}
-                                        </td>
-                                    </tr>
+            {fitnessPlanFetched && fitnessPlan.length > 0 && (
+                <div>
+                    <h2>Fitness Plan</h2>
+                    {fitnessPlan.map((plan, index) => (
+                        <div key={index} className="fitness-plan">
+                            <h3>{plan.Description} (Ends: {plan.EndDate || 'Ongoing'})</h3>
+                            <h4>Exercises</h4>
+                            <ul>
+                                {plan.exercises.map((exercise) => (
+                                    <li key={exercise.ExerciseID}>
+                                        <input
+                                            type="checkbox"
+                                            checked={exercise.Completed}
+                                            onChange={() => updateExerciseStatus(exercise.ExerciseID, !exercise.Completed)}
+                                        />
+                                        {exercise.Name} - {exercise.Reps} reps, {exercise.Sets} sets, {exercise.CaloriesBurned} cal
+                                    </li>
                                 ))}
-                            </tbody>
-                        </table>
-                    </div>
-                ) : (
-                    <p>No fitness plans found.</p>
-                )
+                            </ul>
+                            <h4>Meals</h4>
+                            <ul>
+                                {plan.meals.map((meal) => (
+                                    <li key={meal.MealID}>
+                                        <input
+                                            type="checkbox"
+                                            checked={meal.Completed}
+                                            onChange={() => updateMealStatus(meal.MealID, !meal.Completed)}
+                                        />
+                                        {meal.meal_name} - {meal.Calories} cal, Protein: {meal.Protein}g, Carbs: {meal.Carbs}g, Fat: {meal.Fat}g
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
             )}
 
             {/* Reminders */}
             <button onClick={checkReminders}>Check Reminders</button>
-            {remindersFetched && (
-                reminders.length > 0 ? (
-                    <div>
-                        <h2>Reminders</h2>
-                        <ul>
-                            {reminders.map((reminder, index) => (
-                                <li key={index}>
-                                    {reminder.Message} (Due on: {reminder.ReminderDate})
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                ) : (
-                    <p>No reminders found.</p>
-                )
+            {remindersFetched && reminders.length > 0 && (
+                <div>
+                    <h2>Reminders</h2>
+                    <ul>
+                        {reminders.map((reminder) => (
+                            <li key={reminder.ReminderID}>
+                                <input
+                                    type="checkbox"
+                                    checked={reminder.Completed}
+                                    onChange={() => markReminderComplete(reminder.ReminderID)}
+                                />
+                                {reminder.Message} (Due: {reminder.ReminderDate})
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             )}
 
             {/* Delete Account */}
-            <button className='delete-button' onClick={deleteAccount}>Delete Account</button>
+            <button className="delete-button" onClick={deleteAccount}>Delete Account</button>
         </div>
     );
 }
