@@ -17,6 +17,9 @@ function TrainerHome() {
     const [unassignedClients, setUnassignedClients] = useState([]);
     const [unassignedFetched, setUnassignedFetched] = useState(false);
     const [selectedUnassignedClient, setSelectedUnassignedClient] = useState(null);
+    const [selectedPlanId, setSelectedPlanId] = useState(null);
+    const [newWorkout, setNewWorkout] = useState({ name: "", duration: "" });
+    const [newMeal, setNewMeal] = useState({ name: "", calories: "", protein: "", carbs: "", fat: "" });
 
     const trainerId = localStorage.getItem('trainerID');
 
@@ -127,6 +130,48 @@ function TrainerHome() {
         }
     };
 
+    const assignWorkout = async () => {
+        if (!selectedPlanId || !newWorkout.name || !newWorkout.duration) {
+            alert("Please provide all workout details.");
+            return;
+        }
+        try {
+            const response = await axios.post(`/trainer/${trainerId}/assign_workout`, {
+                plan_id: selectedPlanId,
+                workout_name: newWorkout.name,
+                duration: newWorkout.duration
+            });
+            alert(response.data.message);
+            setNewWorkout({ name: "", duration: "" });
+            viewFitnessPlans(); // Refresh fitness plans
+        } catch (error) {
+            console.error('Error assigning workout:', error);
+        }
+    };
+    
+    const assignMeal = async () => {
+        if (!selectedPlanId || !newMeal.name || !newMeal.calories || !newMeal.protein || !newMeal.carbs || !newMeal.fat) {
+            alert("Please provide all meal details.");
+            return;
+        }
+        try {
+            const response = await axios.post(`/trainer/${trainerId}/assign_meal`, {
+                plan_id: selectedPlanId,
+                meal_name: newMeal.name,
+                calories: newMeal.calories,
+                protein: newMeal.protein,
+                carbs: newMeal.carbs,
+                fat: newMeal.fat
+            });
+            alert(response.data.message);
+            setNewMeal({ name: "", calories: "", protein: "", carbs: "", fat: "" });
+            viewFitnessPlans(); // Refresh fitness plans
+        } catch (error) {
+            console.error('Error assigning meal:', error);
+        }
+    };
+    
+
     return (
         <div className="home">
             <div className="button-box">
@@ -186,55 +231,91 @@ function TrainerHome() {
 
             {/* View Fitness Plans */}
             <button onClick={viewFitnessPlans}>View Fitness Plans</button>
-            {plansFetched && (
-                fitnessPlans.length > 0 ? (
-                    <div>
-                        <h2>Fitness Plans</h2>
-                        {fitnessPlans.map(plan => (
-                            <div key={plan.PlanID} className="fitness-plan">
-                                <h4>Description: {plan.Description}</h4>
-                                <p>End Date: {plan.EndDate || 'Ongoing'}</p>
-                                <h5>Workouts</h5>
-                                {plan.workouts && plan.workouts.length > 0 ? (
-                                    plan.workouts.map((workout, wIndex) => (
-                                        <div key={wIndex} className="workout">
-                                            <p>{workout.WorkoutName} - {workout.Duration} mins</p>
-                                            <ul>
-                                                {workout.exercises.map((exercise, eIndex) => (
-                                                    <li key={eIndex}>
-                                                        {exercise.ExerciseName} - {exercise.Reps} reps, {exercise.Sets} sets, {exercise.CaloriesBurned} cal, {exercise.Completed ? 'Completed' : 'Incomplete'}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>No workouts assigned.</p>
-                                )}
-                                <h5>Meals</h5>
-                                {plan.diets && plan.diets.length > 0 ? (
-                                    plan.diets.map((diet, dIndex) => (
-                                        <div key={dIndex} className="diet">
-                                            <p>Diet: {diet.diet_name}</p>
-                                            <ul>
-                                                {diet.meals.map((meal, mIndex) => (
-                                                    <li key={mIndex}>
-                                                        {meal.meal_name} - {meal.Calories} cal, Protein: {meal.Protein}g, Carbs: {meal.Carbs}g, Fat: {meal.Fat}g, {meal.Completed ? 'Completed' : 'Incomplete'}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>No meals assigned.</p>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <p>No fitness plans found.</p>
-                )
-            )}
+            {fitnessPlans.map(plan => (
+    <div key={plan.PlanID} className="fitness-plan">
+        <h4>Description: {plan.Description}</h4>
+        <p>End Date: {plan.EndDate || 'Ongoing'}</p>
+
+        <h5>Workouts</h5>
+        {plan.workouts && plan.workouts.length > 0 ? (
+            plan.workouts.map((workout, wIndex) => (
+                <div key={wIndex} className="workout">
+                    <p>{workout.WorkoutName} - {workout.Duration} mins</p>
+                </div>
+            ))
+        ) : (
+            <p>No workouts assigned.</p>
+        )}
+
+        <div>
+            <input
+                type="text"
+                placeholder="Workout Name"
+                value={newWorkout.name}
+                onChange={(e) => setNewWorkout({ ...newWorkout, name: e.target.value })}
+            />
+            <input
+                type="number"
+                placeholder="Duration (mins)"
+                value={newWorkout.duration}
+                onChange={(e) => setNewWorkout({ ...newWorkout, duration: e.target.value })}
+            />
+            <button onClick={() => { setSelectedPlanId(plan.PlanID); assignWorkout(); }}>
+                Assign Workout
+            </button>
+        </div>
+
+        <h5>Meals</h5>
+        {plan.diets && plan.diets.length > 0 ? (
+            plan.diets.map((diet, dIndex) => (
+                <div key={dIndex} className="diet">
+                    {diet.meals.map((meal, mIndex) => (
+                        <p key={mIndex}>{meal.meal_name} - {meal.Calories} cal</p>
+                    ))}
+                </div>
+            ))
+        ) : (
+            <p>No meals assigned.</p>
+        )}
+
+        <div>
+            <input
+                type="text"
+                placeholder="Meal Name"
+                value={newMeal.name}
+                onChange={(e) => setNewMeal({ ...newMeal, name: e.target.value })}
+            />
+            <input
+                type="number"
+                placeholder="Calories"
+                value={newMeal.calories}
+                onChange={(e) => setNewMeal({ ...newMeal, calories: e.target.value })}
+            />
+            <input
+                type="number"
+                placeholder="Protein (g)"
+                value={newMeal.protein}
+                onChange={(e) => setNewMeal({ ...newMeal, protein: e.target.value })}
+            />
+            <input
+                type="number"
+                placeholder="Carbs (g)"
+                value={newMeal.carbs}
+                onChange={(e) => setNewMeal({ ...newMeal, carbs: e.target.value })}
+            />
+            <input
+                type="number"
+                placeholder="Fat (g)"
+                value={newMeal.fat}
+                onChange={(e) => setNewMeal({ ...newMeal, fat: e.target.value })}
+            />
+            <button onClick={() => { setSelectedPlanId(plan.PlanID); assignMeal(); }}>
+                Assign Meal
+            </button>
+        </div>
+    </div>
+))}
+
 
             {/* Send Reminder */}
             <h3>Send Reminder</h3>

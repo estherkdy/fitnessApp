@@ -11,6 +11,7 @@ import TrainerHome from './pages/TrainerHome';
 import './App.css';
 import ClientUpdate from './pages/ClientUpdate';
 import TrainerUpdate from './pages/TrainerUpdate';
+import AdminHome from './pages/AdminHome';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/clientlogin" element={<ClientLogin />} />
           <Route path="/trainerlogin" element={<TrainerLogin />} />
           <Route path="/adminlogin" element={<AdminLogin />} />
+          <Route path="/adminhome" element={<AdminHome />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/clienthome" element={<ClientHome />} />
           <Route path="/trainerhome" element={<TrainerHome />} />
