@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './TrainerHome.css';
+import Modal from '../Modal'
 
 function TrainerHome() {
     const navigate = useNavigate();
@@ -23,34 +24,78 @@ function TrainerHome() {
 
     const trainerId = localStorage.getItem('trainerID');
 
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalContent, setModalContent] = useState(null);
+
+    const openModal = (content) => {
+        setModalContent(content);
+        setModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+        setModalContent(null);
+    };
+
     const viewClients = async () => {
-        if (clientsFetched) {
-            setClientsFetched(false);
-            setClients([]);
-        } else {
-            setClientsFetched(true);
-            try {
-                const response = await axios.get(`/trainer/${trainerId}/clients`);
-                setClients(response.data);
-            } catch (error) {
-                console.error('Error fetching clients:', error);
-            }
+        setClientsFetched(true);
+        try {
+            const response = await axios.get(`/trainer/${trainerId}/clients`);
+            const data = response.data;
+            setClients(data);
+            openModal(
+                data.length > 0 ? (
+                    <div>
+                        <h2>Clients</h2>
+                        {data.map(client => (
+                            <div key={client.client_id} className="client-details">
+                                <h3>{client.FirstName} {client.LastName}</h3>
+                                <p>Email: {client.Email}</p>
+                                <p>Age: {client.age} years</p>
+                                <p>Height: {client.height} cm</p>
+                                <p>Weight: {client.weight} kg</p>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p>No clients found.</p>
+                )
+            )
+        } catch (error) {
+            console.error('Error fetching clients:', error);
         }
     };
 
     const viewUnassignedClients = async () => {
-        if (unassignedFetched) {
-            setUnassignedFetched(false);
-            setUnassignedClients([]);
-        } else {
-            setUnassignedFetched(true);
-            try {
-                const response = await axios.get(`/trainer/${trainerId}/unassigned_clients`);
-                setUnassignedClients(response.data);
+        setUnassignedFetched(true);
+        try {
+            const response = await axios.get(`/trainer/${trainerId}/unassigned_clients`);
+            const data = response.data;
+            setUnassignedClients(data);
+            openModal(
+                data.length > 0 ? (
+                    <div>
+                        <h2>Unassigned Clients</h2>
+                        <select
+                            onChange={(e) => setSelectedUnassignedClient(e.target.value)}
+                            value={selectedUnassignedClient || ""}
+                        >
+                            <option value="" disabled>Select a client</option>
+                            {data.map(client => (
+                                <option key={client.client_id} value={client.client_id}>
+                                    {client.FirstName} {client.LastName} ({client.Email})
+                                </option>
+                            ))}
+                        </select>
+                        <button onClick={assignClient}>Assign Client</button>
+                    </div>
+                ) : (
+                    <p>No unassigned clients found.</p>
+                )
+            )
             } catch (error) {
                 console.error('Error fetching unassigned clients:', error);
             }
-        }
     };
 
     const assignClient = async () => {
@@ -71,17 +116,101 @@ function TrainerHome() {
     };
 
     const viewFitnessPlans = async () => {
-        if (plansFetched) {
-            setPlansFetched(false);
-            setFitnessPlans([]);
-        } else {
-            setPlansFetched(true);
-            try {
-                const response = await axios.get(`/trainer/${trainerId}/fitness_plans`);
-                setFitnessPlans(response.data);
-            } catch (error) {
-                console.error('Error fetching fitness plans:', error);
-            }
+        setPlansFetched(true);
+        try {
+            const response = await axios.get(`/trainer/${trainerId}/fitness_plans`);
+            const data = response.data;
+            setFitnessPlans(data);
+            openModal(
+                <div>
+                    {data.map(plan => (
+                    <div key={plan.PlanID} className="fitness-plan">
+                        <h4>Description: {plan.Description}</h4>
+                        <p>End Date: {plan.EndDate || 'Ongoing'}</p>
+    
+                        <h5>Workouts</h5>
+                        {plan.workouts && plan.workouts.length > 0 ? (
+                            plan.workouts.map((workout, wIndex) => (
+                                <div key={wIndex} className="workout">
+                                    <p>{workout.WorkoutName} - {workout.Duration} mins</p>
+                                </div>
+                            ))
+                        ) : (
+                            <p>No workouts assigned.</p>
+                        )}
+    
+                        <div>
+                            <input
+                                type="text"
+                                placeholder="Workout Name"
+                                value={newWorkout.name}
+                                onChange={(e) => setNewWorkout({ ...newWorkout, name: e.target.value })}
+                            />
+                            <input
+                                type="number"
+                                placeholder="Duration (mins)"
+                                value={newWorkout.duration}
+                                onChange={(e) => setNewWorkout({ ...newWorkout, duration: e.target.value })}
+                            />
+                            <button onClick={() => { setSelectedPlanId(plan.PlanID); assignWorkout(); }}>
+                                Assign Workout
+                            </button>
+                        </div>
+    
+                        <h5>Meals</h5>
+                        {plan.diets && plan.diets.length > 0 ? (
+                            plan.diets.map((diet, dIndex) => (
+                                <div key={dIndex} className="diet">
+                                    {diet.meals.map((meal, mIndex) => (
+                                        <p key={mIndex}>{meal.meal_name} - {meal.Calories} cal</p>
+                                    ))}
+                                </div>
+                            ))
+                        ) : (
+                            <p>No meals assigned.</p>
+                        )}
+    
+                        <div>
+                            <input
+                                type="text"
+                                placeholder="Meal Name"
+                                value={newMeal.name}
+                                onChange={(e) => setNewMeal({ ...newMeal, name: e.target.value })}
+                            />
+                            <input
+                                type="number"
+                                placeholder="Calories"
+                                value={newMeal.calories}
+                                onChange={(e) => setNewMeal({ ...newMeal, calories: e.target.value })}
+                            />
+                            <input
+                                type="number"
+                                placeholder="Protein (g)"
+                                value={newMeal.protein}
+                                onChange={(e) => setNewMeal({ ...newMeal, protein: e.target.value })}
+                            />
+                            <input
+                                type="number"
+                                placeholder="Carbs (g)"
+                                value={newMeal.carbs}
+                                onChange={(e) => setNewMeal({ ...newMeal, carbs: e.target.value })}
+                            />
+                            <input
+                                type="number"
+                                placeholder="Fat (g)"
+                                value={newMeal.fat}
+                                onChange={(e) => setNewMeal({ ...newMeal, fat: e.target.value })}
+                            />
+                            <button onClick={() => { setSelectedPlanId(plan.PlanID); assignMeal(); }}>
+                                Assign Meal
+                            </button>
+                        </div>
+                    </div>
+                ))}
+                </div>
+            )
+        } catch (error) {
+            console.error('Error fetching fitness plans:', error);
         }
     };
 
@@ -103,6 +232,34 @@ function TrainerHome() {
             console.error('Error updating fitness plan:', error);
         }
     };
+
+    const openSendReminder = () => {
+        openModal(
+            <div>
+                <h3>Send Reminder</h3>
+                <select onChange={(e) => setSelectedClientId(e.target.value)} value={selectedClientId || ""}>
+                    <option value="" disabled>Select Client</option>
+                    {clients.map(client => (
+                        <option key={client.client_id} value={client.client_id}>
+                            {client.FirstName} {client.LastName}
+                        </option>
+                    ))}
+                </select>
+                <input
+                    type="text"
+                    placeholder="Reminder Message"
+                    value={reminderMessage}
+                    onChange={(e) => setReminderMessage(e.target.value)}
+                />
+                <input
+                    type="date"
+                    value={reminderDate}
+                    onChange={(e) => setReminderDate(e.target.value)}
+                />
+                <button onClick={sendReminder}>Send Reminder</button>
+            </div>
+        )
+    }
 
     const sendReminder = async () => {
         try {
@@ -186,164 +343,26 @@ function TrainerHome() {
 
             {/* View Clients */}
             <button onClick={viewClients}>View Clients</button>
-            {clientsFetched && (
-                clients.length > 0 ? (
-                    <div>
-                        <h2>Clients</h2>
-                        {clients.map(client => (
-                            <div key={client.client_id} className="client-details">
-                                <h3>{client.FirstName} {client.LastName}</h3>
-                                <p>Email: {client.Email}</p>
-                                <p>Age: {client.age} years</p>
-                                <p>Height: {client.height} cm</p>
-                                <p>Weight: {client.weight} kg</p>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <p>No clients found.</p>
-                )
-            )}
 
             {/* View Unassigned Clients */}
             <button onClick={viewUnassignedClients}>View Unassigned Clients</button>
-            {unassignedFetched && (
-                unassignedClients.length > 0 ? (
-                    <div>
-                        <h2>Unassigned Clients</h2>
-                        <select
-                            onChange={(e) => setSelectedUnassignedClient(e.target.value)}
-                            value={selectedUnassignedClient || ""}
-                        >
-                            <option value="" disabled>Select a client</option>
-                            {unassignedClients.map(client => (
-                                <option key={client.client_id} value={client.client_id}>
-                                    {client.FirstName} {client.LastName} ({client.Email})
-                                </option>
-                            ))}
-                        </select>
-                        <button onClick={assignClient}>Assign Client</button>
-                    </div>
-                ) : (
-                    <p>No unassigned clients found.</p>
-                )
-            )}
 
             {/* View Fitness Plans */}
             <button onClick={viewFitnessPlans}>View Fitness Plans</button>
-            {fitnessPlans.map(plan => (
-    <div key={plan.PlanID} className="fitness-plan">
-        <h4>Description: {plan.Description}</h4>
-        <p>End Date: {plan.EndDate || 'Ongoing'}</p>
-
-        <h5>Workouts</h5>
-        {plan.workouts && plan.workouts.length > 0 ? (
-            plan.workouts.map((workout, wIndex) => (
-                <div key={wIndex} className="workout">
-                    <p>{workout.WorkoutName} - {workout.Duration} mins</p>
-                </div>
-            ))
-        ) : (
-            <p>No workouts assigned.</p>
-        )}
-
-        <div>
-            <input
-                type="text"
-                placeholder="Workout Name"
-                value={newWorkout.name}
-                onChange={(e) => setNewWorkout({ ...newWorkout, name: e.target.value })}
-            />
-            <input
-                type="number"
-                placeholder="Duration (mins)"
-                value={newWorkout.duration}
-                onChange={(e) => setNewWorkout({ ...newWorkout, duration: e.target.value })}
-            />
-            <button onClick={() => { setSelectedPlanId(plan.PlanID); assignWorkout(); }}>
-                Assign Workout
-            </button>
-        </div>
-
-        <h5>Meals</h5>
-        {plan.diets && plan.diets.length > 0 ? (
-            plan.diets.map((diet, dIndex) => (
-                <div key={dIndex} className="diet">
-                    {diet.meals.map((meal, mIndex) => (
-                        <p key={mIndex}>{meal.meal_name} - {meal.Calories} cal</p>
-                    ))}
-                </div>
-            ))
-        ) : (
-            <p>No meals assigned.</p>
-        )}
-
-        <div>
-            <input
-                type="text"
-                placeholder="Meal Name"
-                value={newMeal.name}
-                onChange={(e) => setNewMeal({ ...newMeal, name: e.target.value })}
-            />
-            <input
-                type="number"
-                placeholder="Calories"
-                value={newMeal.calories}
-                onChange={(e) => setNewMeal({ ...newMeal, calories: e.target.value })}
-            />
-            <input
-                type="number"
-                placeholder="Protein (g)"
-                value={newMeal.protein}
-                onChange={(e) => setNewMeal({ ...newMeal, protein: e.target.value })}
-            />
-            <input
-                type="number"
-                placeholder="Carbs (g)"
-                value={newMeal.carbs}
-                onChange={(e) => setNewMeal({ ...newMeal, carbs: e.target.value })}
-            />
-            <input
-                type="number"
-                placeholder="Fat (g)"
-                value={newMeal.fat}
-                onChange={(e) => setNewMeal({ ...newMeal, fat: e.target.value })}
-            />
-            <button onClick={() => { setSelectedPlanId(plan.PlanID); assignMeal(); }}>
-                Assign Meal
-            </button>
-        </div>
-    </div>
-))}
 
 
             {/* Send Reminder */}
-            <h3>Send Reminder</h3>
-            <select onChange={(e) => setSelectedClientId(e.target.value)} value={selectedClientId || ""}>
-                <option value="" disabled>Select Client</option>
-                {clients.map(client => (
-                    <option key={client.client_id} value={client.client_id}>
-                        {client.FirstName} {client.LastName}
-                    </option>
-                ))}
-            </select>
-            <input
-                type="text"
-                placeholder="Reminder Message"
-                value={reminderMessage}
-                onChange={(e) => setReminderMessage(e.target.value)}
-            />
-            <input
-                type="date"
-                value={reminderDate}
-                onChange={(e) => setReminderDate(e.target.value)}
-            />
-            <button onClick={sendReminder}>Send Reminder</button>
+            <button onClick={openSendReminder}>Send Reminder</button>
 
             {/* Delete Account */}
             <button className="delete-button" onClick={deleteAccount}>
                 Delete Account
             </button>
+
+            {/* Modal */}
+            <Modal isOpen={modalOpen} onClose={closeModal}>
+                {modalContent}
+            </Modal>
         </div>
     );
 }
