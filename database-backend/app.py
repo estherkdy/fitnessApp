@@ -250,6 +250,67 @@ def assign_meal(trainer_id):
     close_connection(connection)
     return jsonify({"message": "Meal assigned successfully"}), 201
 
+@app.route('/trainer/unassigned_clients', methods=['GET'])
+@cross_origin(origin='*')
+def get_unassigned_clients():
+    connection = create_connection()
+    cursor = connection.cursor(dictionary=True)
+    
+    # Query to find clients without a trainer (no associated fitness plan)
+    cursor.execute("""
+        SELECT c.client_id, c.FirstName, c.LastName, c.Email, c.Height, c.Weight, c.Age
+        FROM Client c
+        WHERE c.client_id NOT IN (
+            SELECT DISTINCT ClientID
+            FROM FitnessPlan
+            WHERE TrainerID IS NOT NULL
+        )
+    """)
+    unassigned_clients = cursor.fetchall()
+    close_connection(connection)
+
+    return jsonify(unassigned_clients)
+
+@app.route('/trainer/<int:trainer_id>/assign_client', methods=['POST', 'OPTIONS'])
+@cross_origin(origin='*')
+def assign_client_to_trainer(trainer_id):
+    data = request.json
+    client_id = data.get('client_id')
+
+    if not client_id:
+        return jsonify({"error": "Missing client_id"}), 400
+
+    connection = create_connection()
+    cursor = connection.cursor()
+
+    try:
+        # Check if the client is already assigned to a trainer
+        cursor.execute("""
+            SELECT TrainerID
+            FROM FitnessPlan
+            WHERE ClientID = %s
+        """, (client_id,))
+        existing_assignment = cursor.fetchone()
+
+        if existing_assignment:
+            return jsonify({"error": "Client is already assigned to a trainer"}), 400
+
+        # Assign the client to the trainer by creating a fitness plan
+        cursor.execute("""
+            INSERT INTO FitnessPlan (ClientID, TrainerID, StartDate, Description)
+            VALUES (%s, %s, CURDATE(), 'New Fitness Plan')
+        """, (client_id, trainer_id))
+        connection.commit()
+
+        return jsonify({"message": "Client successfully assigned to trainer"}), 201
+
+    except Error as e:
+        connection.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        close_connection(connection)
+
+
 # ================================================================
 # Admin Functions
 # ================================================================
