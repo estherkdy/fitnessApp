@@ -39,7 +39,7 @@ function ClientLogin() {
     const disabled = !email || !password;
 
     return (
-        <div>
+        <div className='login'>
             <button className='back-button' title="Back" onClick={() => navigate(-1)}>Back</button>
             <h1>Client Login</h1>
             <div className="input-row">

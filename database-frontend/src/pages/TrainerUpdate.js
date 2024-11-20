@@ -9,11 +9,8 @@ function TrainerUpdate() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
-    const [height, setHeight] = useState('');
-    const [weight, setWeight] = useState('');
-    const [age, setAge] = useState('');
     const [confirmPasswordText, setConfirmPasswordText] = useState('Confirm your password:');
-    const [isError, setIsError] = useState(false); // Track if there's an error
+    const [isError] = useState(false); // Track if there's an error
 
     const handleEmail = (event) => {
         setEmail(event.target.value);

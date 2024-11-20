@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './ClientHome.css';
 import ClientLog from './ClientLog';
+import Modal from '../Modal';
 
 function ClientHome() {
     const navigate = useNavigate();
@@ -16,35 +17,90 @@ function ClientHome() {
 
     const clientId = localStorage.getItem('clientId');
 
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalContent, setModalContent] = useState(null);
+
+    const openModal = (content) => {
+        setModalContent(content);
+        setModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+        setModalContent(null);
+    };
+
     const getTrainer = async () => {
-        if (trainerFetched) {
-            setTrainerFetched(false);
-            setTrainerInfo(null);
-        } else {
-            setTrainerFetched(true);
-            try {
-                const response = await axios.get(`/client/${clientId}/trainer`);
-                setTrainerInfo(response.data);
-            } catch (error) {
-                console.error('Error fetching trainer info:', error);
-            }
+        setTrainerFetched(true);
+        try {
+            const response = await axios.get(`/client/${clientId}/trainer`);
+            const trainerData = response.data;
+            setTrainerInfo(trainerData); // Update state
+            openModal(
+                trainerData ? (
+                    <div>
+                        <h2>Trainer Information</h2>
+                        <p>
+                            {trainerData.FirstName} {trainerData.LastName} ({trainerData.Specialty})
+                        </p>
+                    </div>
+                ) : (
+                    <p>No trainer assigned.</p>
+                )
+            );
+        } catch (error) {
+            console.error('Error fetching trainer info:', error);
+            openModal(<p>Error fetching trainer information. Please try again later.</p>);
         }
     };
 
     const viewFitnessPlan = async () => {
-        if (fitnessPlanFetched) {
-            setFitnessPlanFetched(false);
-            setFitnessPlan([]);
-        } else {
-            setFitnessPlanFetched(true);
-            try {
-                const response = await axios.get(`/client/${clientId}/fitness_plan`);
-                setFitnessPlan(response.data);
-            } catch (error) {
-                console.error('Error fetching fitness plan:', error);
-            }
+        setFitnessPlanFetched(true);
+        try {
+            const response = await axios.get(`/client/${clientId}/fitness_plan`);
+            const data = response.data;
+            setFitnessPlan(data);
+            openModal(
+                <div>
+                    <h2>Fitness Plan</h2>
+                    {data.map((plan, index) => (
+                        <div key={index} className="fitness-plan">
+                            <h3>{plan.Description} (Ends: {plan.EndDate || 'Ongoing'})</h3>
+                            <h4>Exercises</h4>
+                            <ul>
+                                {plan.exercises.map((exercise) => (
+                                    <li key={exercise.ExerciseID}>
+                                        <input
+                                            type="checkbox"
+                                            checked={exercise.Completed}
+                                            onChange={() => updateExerciseStatus(exercise.ExerciseID, !exercise.Completed)}
+                                        />
+                                        {exercise.Name} - {exercise.Reps} reps, {exercise.Sets} sets, {exercise.CaloriesBurned} cal
+                                    </li>
+                                ))}
+                            </ul>
+                            <h4>Meals</h4>
+                            <ul>
+                                {plan.meals.map((meal) => (
+                                    <li key={meal.MealID}>
+                                        <input
+                                            type="checkbox"
+                                            checked={meal.Completed}
+                                            onChange={() => updateMealStatus(meal.MealID, !meal.Completed)}
+                                        />
+                                        {meal.meal_name} - {meal.Calories} cal, Protein: {meal.Protein}g, Carbs: {meal.Carbs}g, Fat: {meal.Fat}g
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
+            );
+        } catch (error) {
+            console.error('Error fetching fitness plan:', error);
         }
     };
+    
 
     const updateExerciseStatus = async (exerciseId, completed) => {
         try {
@@ -71,17 +127,30 @@ function ClientHome() {
     };
 
     const checkReminders = async () => {
-        if (remindersFetched) {
-            setRemindersFetched(false);
-            setReminders([]);
-        } else {
-            setRemindersFetched(true);
-            try {
-                const response = await axios.get(`/client/${clientId}/reminders`);
-                setReminders(response.data);
-            } catch (error) {
-                console.error('Error fetching reminders:', error);
-            }
+        setRemindersFetched(true);
+        try {
+            const response = await axios.get(`/client/${clientId}/reminders`);
+            const data = response.data;
+            setReminders(data);
+            openModal(
+                <div>
+                    <h2>Reminders</h2>
+                    <ul>
+                        {reminders.map((reminder) => (
+                            <li key={reminder.ReminderID}>
+                                <input
+                                    type="checkbox"
+                                    checked={reminder.Completed}
+                                    onChange={() => markReminderComplete(reminder.ReminderID)}
+                                />
+                                {reminder.Message} (Due: {reminder.ReminderDate})
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )
+        } catch (error) {
+            console.error('Error fetching reminders:', error);
         }
     };
 
@@ -118,79 +187,22 @@ function ClientHome() {
 
             {/* Trainer Info */}
             <button onClick={getTrainer}>View Trainer Info</button>
-            {trainerFetched && (
-                trainerInfo ? (
-                    <div>
-                        <h2>Trainer Information</h2>
-                        <p>{trainerInfo.FirstName} {trainerInfo.LastName} ({trainerInfo.Specialty})</p>
-                    </div>
-                ) : (
-                    <p>No trainer assigned.</p>
-                )
-            )}
+
             <ClientLog />
 
             {/* Fitness Plan */}
             <button onClick={viewFitnessPlan}>View Fitness Plan</button>
-            {fitnessPlanFetched && fitnessPlan.length > 0 && (
-                <div>
-                    <h2>Fitness Plan</h2>
-                    {fitnessPlan.map((plan, index) => (
-                        <div key={index} className="fitness-plan">
-                            <h3>{plan.Description} (Ends: {plan.EndDate || 'Ongoing'})</h3>
-                            <h4>Exercises</h4>
-                            <ul>
-                                {plan.exercises.map((exercise) => (
-                                    <li key={exercise.ExerciseID}>
-                                        <input
-                                            type="checkbox"
-                                            checked={exercise.Completed}
-                                            onChange={() => updateExerciseStatus(exercise.ExerciseID, !exercise.Completed)}
-                                        />
-                                        {exercise.Name} - {exercise.Reps} reps, {exercise.Sets} sets, {exercise.CaloriesBurned} cal
-                                    </li>
-                                ))}
-                            </ul>
-                            <h4>Meals</h4>
-                            <ul>
-                                {plan.meals.map((meal) => (
-                                    <li key={meal.MealID}>
-                                        <input
-                                            type="checkbox"
-                                            checked={meal.Completed}
-                                            onChange={() => updateMealStatus(meal.MealID, !meal.Completed)}
-                                        />
-                                        {meal.meal_name} - {meal.Calories} cal, Protein: {meal.Protein}g, Carbs: {meal.Carbs}g, Fat: {meal.Fat}g
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
-                </div>
-            )}
 
             {/* Reminders */}
             <button onClick={checkReminders}>Check Reminders</button>
-            {remindersFetched && reminders.length > 0 && (
-                <div>
-                    <h2>Reminders</h2>
-                    <ul>
-                        {reminders.map((reminder) => (
-                            <li key={reminder.ReminderID}>
-                                <input
-                                    type="checkbox"
-                                    checked={reminder.Completed}
-                                    onChange={() => markReminderComplete(reminder.ReminderID)}
-                                />
-                                {reminder.Message} (Due: {reminder.ReminderDate})
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            )}
 
             {/* Delete Account */}
             <button className="delete-button" onClick={deleteAccount}>Delete Account</button>
+
+            {/* Modal */}
+            <Modal isOpen={modalOpen} onClose={closeModal}>
+                {modalContent}
+            </Modal>
         </div>
     );
 }

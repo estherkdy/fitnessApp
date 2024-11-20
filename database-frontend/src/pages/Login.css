@@ -1,12 +1,21 @@
+.login {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 60vh;
+}
+
 .back-button {
     background-color: #28a745;
     color: white;
     border: none;
     padding: 8px 12px;
     border-radius: 5px;
-    font-size: 14px;
+    font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s;
+    margin-bottom: 10%;
+    width: 100%;
 }
 
 .back-button:hover {
@@ -52,4 +61,14 @@ button:disabled:hover {
     background-color: #ccc;
     color: #888;
     cursor: not-allowed;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box; /* Ensures consistent padding and border treatment */
 }
