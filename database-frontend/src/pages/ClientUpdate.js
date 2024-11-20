@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Update.css';
+import axios from 'axios';
 
 function ClientUpdate() {
     const navigate = useNavigate();
@@ -38,6 +39,19 @@ function ClientUpdate() {
     };
     const handleAge = (event) => {
         setAge(event.target.value);
+    };
+
+    const clientId = localStorage.getItem('clientId');
+
+    const deleteAccount = async () => {
+        try {
+            await axios.delete(`/client/${clientId}/delete`);
+            alert('Account deleted');
+            localStorage.removeItem('clientId');
+            navigate('/');
+        } catch (error) {
+            console.error('Error deleting account:', error);
+        }
     };
 
     return(
@@ -129,6 +143,8 @@ function ClientUpdate() {
                     />
                 </div>
             <button>Update</button>
+            {/* Delete Account */}
+            <button className="delete-button" onClick={deleteAccount}>Delete Account</button>
         </div>
     );
 }

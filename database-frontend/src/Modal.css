@@ -24,12 +24,13 @@
 .modal-close-button {
     position: absolute; /* Position relative to the .modal-content */
     top: 2%;
-    right: -42.5%;
+    right: 5%;
     background: none;
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
     color: #333;
+    width: 1%;
 }
 
 .modal-close-button:hover {

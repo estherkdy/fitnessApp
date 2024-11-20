@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './ClientLog.css';
+import Modal from '../Modal';
 
 function ClientLog() {
     const [showExerciseForm, setShowExerciseForm] = useState(false);
@@ -42,54 +43,112 @@ function ClientLog() {
         setMealData({ name: '', calories: '', protein: '', carbs: '', fat: '' });
     };
 
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalContent, setModalContent] = useState(null);
+
+    const openModal = (content) => {
+        setModalContent(content);
+        setModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+        setModalContent(null);
+    };
+
+    const openExerciseForm = () => {
+        openModal(
+            <div className="form-section">
+                <h3>Log Exercise</h3>
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Exercise Name"
+                    value={exerciseData.name}
+                    onChange={handleExerciseChange}
+                />
+                <input
+                    type="number"
+                    name="reps"
+                    placeholder="Reps"
+                    value={exerciseData.reps}
+                    onChange={handleExerciseChange}
+                />
+                <input
+                    type="number"
+                    name="sets"
+                    placeholder="Sets"
+                    value={exerciseData.sets}
+                    onChange={handleExerciseChange}
+                />
+                <input
+                    type="number"
+                    name="duration"
+                    placeholder="Duration (minutes)"
+                    value={exerciseData.duration}
+                    onChange={handleExerciseChange}
+                />
+                <input
+                    type="number"
+                    name="calories"
+                    placeholder="Calories Burned"
+                    value={exerciseData.calories}
+                    onChange={handleExerciseChange}
+                />
+                <button onClick={addExercise}>Add Exercise</button>
+            </div>
+        )
+    } 
+
+    const openMealForm = () => {
+        openModal(
+            <div className="form-section">
+                <h3>Log Meal</h3>
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Meal Name"
+                    value={mealData.name}
+                    onChange={handleMealChange}
+                />
+                <input
+                    type="number"
+                    name="calories"
+                    placeholder="Calories"
+                    value={mealData.calories}
+                    onChange={handleMealChange}
+                />
+                <input
+                    type="number"
+                    name="protein"
+                    placeholder="Protein (g)"
+                    value={mealData.protein}
+                    onChange={handleMealChange}
+                />
+                <input
+                    type="number"
+                    name="carbs"
+                    placeholder="Carbs (g)"
+                    value={mealData.carbs}
+                    onChange={handleMealChange}
+                />
+                <input
+                    type="number"
+                    name="fat"
+                    placeholder="Fat (g)"
+                    value={mealData.fat}
+                    onChange={handleMealChange}
+                />
+                <button onClick={addMeal}>Add Meal</button>
+            </div>
+        )
+    }
+
     return (
         <div className="client-log">
 
             {/* Exercise Section */}
-            <button onClick={() => setShowExerciseForm(!showExerciseForm)}>
-                {showExerciseForm ? 'Hide Exercise Form' : 'Log Exercise'}
-            </button>
-            {showExerciseForm && (
-                <div className="form-section">
-                    <h3>Log Exercise</h3>
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Exercise Name"
-                        value={exerciseData.name}
-                        onChange={handleExerciseChange}
-                    />
-                    <input
-                        type="number"
-                        name="reps"
-                        placeholder="Reps"
-                        value={exerciseData.reps}
-                        onChange={handleExerciseChange}
-                    />
-                    <input
-                        type="number"
-                        name="sets"
-                        placeholder="Sets"
-                        value={exerciseData.sets}
-                        onChange={handleExerciseChange}
-                    />
-                    <input
-                        type="number"
-                        name="duration"
-                        placeholder="Duration (minutes)"
-                        value={exerciseData.duration}
-                        onChange={handleExerciseChange}
-                    />
-                    <input
-                        type="number"
-                        name="calories"
-                        placeholder="Calories Burned"
-                        value={exerciseData.calories}
-                        onChange={handleExerciseChange}
-                    />
-                    <button onClick={addExercise}>Add Exercise</button>
-                </div>
-            )}
+            <button onClick={openExerciseForm}>Log Exercise</button>
 
             {/* Display Logged Exercises */}
             {exercises.length > 0 && (
@@ -106,50 +165,7 @@ function ClientLog() {
             )}
 
             {/* Meal Section */}
-            <button onClick={() => setShowMealForm(!showMealForm)}>
-                {showMealForm ? 'Hide Meal Form' : 'Log Meal'}
-            </button>
-            {showMealForm && (
-                <div className="form-section">
-                    <h3>Log Meal</h3>
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Meal Name"
-                        value={mealData.name}
-                        onChange={handleMealChange}
-                    />
-                    <input
-                        type="number"
-                        name="calories"
-                        placeholder="Calories"
-                        value={mealData.calories}
-                        onChange={handleMealChange}
-                    />
-                    <input
-                        type="number"
-                        name="protein"
-                        placeholder="Protein (g)"
-                        value={mealData.protein}
-                        onChange={handleMealChange}
-                    />
-                    <input
-                        type="number"
-                        name="carbs"
-                        placeholder="Carbs (g)"
-                        value={mealData.carbs}
-                        onChange={handleMealChange}
-                    />
-                    <input
-                        type="number"
-                        name="fat"
-                        placeholder="Fat (g)"
-                        value={mealData.fat}
-                        onChange={handleMealChange}
-                    />
-                    <button onClick={addMeal}>Add Meal</button>
-                </div>
-            )}
+            <button onClick={openMealForm}>Log Meal</button>
 
             {/* Display Logged Meals */}
             {meals.length > 0 && (
@@ -164,6 +180,11 @@ function ClientLog() {
                     </ul>
                 </div>
             )}
+
+            {/* Modal */}
+            <Modal isOpen={modalOpen} onClose={closeModal}>
+                {modalContent}
+            </Modal>
         </div>
     );
 }

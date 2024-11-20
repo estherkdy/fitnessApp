@@ -136,7 +136,7 @@ function ClientHome() {
                 <div>
                     <h2>Reminders</h2>
                     <ul>
-                        {reminders.map((reminder) => (
+                        {data.map((reminder) => (
                             <li key={reminder.ReminderID}>
                                 <input
                                     type="checkbox"
@@ -166,22 +166,11 @@ function ClientHome() {
         }
     };
 
-    const deleteAccount = async () => {
-        try {
-            await axios.delete(`/client/${clientId}/delete`);
-            alert('Account deleted');
-            localStorage.removeItem('clientId');
-            navigate('/');
-        } catch (error) {
-            console.error('Error deleting account:', error);
-        }
-    };
-
     return (
         <div className="home">
             <div className="button-box">
                 <button className="logout-button" onClick={() => navigate('/')}>Log Out</button>
-                <button className="update-button" onClick={() => navigate('/clientupdate')}>Update Profile</button>
+                <button className="update-button" onClick={() => navigate('/clientupdate')}>View Profile</button>
             </div>
             <h1>Client Home Page</h1>
 
@@ -196,8 +185,6 @@ function ClientHome() {
             {/* Reminders */}
             <button onClick={checkReminders}>Check Reminders</button>
 
-            {/* Delete Account */}
-            <button className="delete-button" onClick={deleteAccount}>Delete Account</button>
 
             {/* Modal */}
             <Modal isOpen={modalOpen} onClose={closeModal}>

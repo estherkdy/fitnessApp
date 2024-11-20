@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Update.css';
 
 function TrainerUpdate() {
@@ -11,6 +12,8 @@ function TrainerUpdate() {
     const [lastName, setLastName] = useState('');
     const [confirmPasswordText, setConfirmPasswordText] = useState('Confirm your password:');
     const [isError] = useState(false); // Track if there's an error
+
+    const trainerId = localStorage.getItem('trainerID');
 
     const handleEmail = (event) => {
         setEmail(event.target.value);
@@ -26,6 +29,17 @@ function TrainerUpdate() {
     };
     const handleLastName = (event) => {
         setLastName(event.target.value);
+    };
+
+    const deleteAccount = async () => {
+        try {
+            await axios.delete(`/trainer/${trainerId}/delete`);
+            alert('Account deleted');
+            localStorage.removeItem('trainerId');
+            navigate('/');
+        } catch (error) {
+            console.error('Error deleting account:', error);
+        }
     };
 
     return(
@@ -87,6 +101,11 @@ function TrainerUpdate() {
                 />
             </div>
             <button>Update</button>
+
+            {/* Delete Account */}
+            <button className="delete-button" onClick={deleteAccount}>
+                Delete Account
+            </button>
         </div>
     );
 }

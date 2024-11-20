@@ -276,17 +276,6 @@ function TrainerHome() {
         }
     };
 
-    const deleteAccount = async () => {
-        try {
-            await axios.delete(`/trainer/${trainerId}/delete`);
-            alert('Account deleted');
-            localStorage.removeItem('trainerId');
-            navigate('/');
-        } catch (error) {
-            console.error('Error deleting account:', error);
-        }
-    };
-
     const assignWorkout = async () => {
         if (!selectedPlanId || !newWorkout.name || !newWorkout.duration) {
             alert("Please provide all workout details.");
@@ -336,7 +325,7 @@ function TrainerHome() {
                     Log Out
                 </button>
                 <button className="update-button" onClick={() => navigate('/trainerupdate')}>
-                    Update Profile
+                    View Profile
                 </button>
             </div>
             <h1>Trainer Home Page</h1>
@@ -353,11 +342,6 @@ function TrainerHome() {
 
             {/* Send Reminder */}
             <button onClick={openSendReminder}>Send Reminder</button>
-
-            {/* Delete Account */}
-            <button className="delete-button" onClick={deleteAccount}>
-                Delete Account
-            </button>
 
             {/* Modal */}
             <Modal isOpen={modalOpen} onClose={closeModal}>
