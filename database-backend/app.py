@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import mysql.connector
 from mysql.connector import Error
 from flask_cors import CORS, cross_origin
+import bcrypt
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
@@ -26,51 +27,43 @@ def close_connection(connection):
         connection.close()
         print("MySQL connection closed")
 
-# ================================================================
-# Authentication Functions
-# ================================================================
-
 @app.route('/login', methods=['POST', 'OPTIONS'])
 @cross_origin(origin='http://localhost:3000')
 def login():
     data = request.json
     email = data.get("email")
-    password = data.get("password")
+    password = data.get("password").encode('utf-8')  # Encode the password
     user_type = data.get("user_type")
 
     connection = create_connection()
     cursor = connection.cursor(dictionary=True)
 
     if user_type == 'client':
-        cursor.execute("SELECT * FROM Client WHERE Email = %s AND Password = %s", (email, password))
+        cursor.execute("SELECT * FROM Client WHERE Email = %s", (email,))
     elif user_type == 'trainer':
-        cursor.execute("SELECT * FROM Trainer WHERE Email = %s AND Password = %s", (email, password))
-    elif user_type == 'admin':
-        cursor.execute("SELECT * FROM Admin WHERE Email = %s AND Password = %s", (email, password))
+        cursor.execute("SELECT * FROM Trainer WHERE Email = %s", (email,))
     else:
         return jsonify({"error": "Invalid user type"}), 400
 
     result = cursor.fetchone()
     close_connection(connection)
 
-    if result and user_type == 'client':
-        return jsonify({"message": "Login successful", "user_data": result, "client_id": result["client_id"]})
-    elif result and user_type == 'trainer':
-        return jsonify({"message": "Login successful", "user_data": result, "trainer_id": result["TrainerID"]})
-    elif result and user_type == 'admin':
-        return jsonify({"message": "Login successful", "user_data": result, "admin_id": result["AdminId"]})
+    if result and bcrypt.checkpw(password, result['Password'].encode('utf-8')):
+        if user_type == 'client':
+            return jsonify({"message": "Login successful", "user_data": result, "client_id": result["client_id"]})
+        elif user_type == 'trainer':
+            return jsonify({"message": "Login successful", "user_data": result, "trainer_id": result["TrainerID"]})
     else:
         return jsonify({"message": "Invalid credentials"}), 401
 
-# ================================================================
-# Client Functions
-# ================================================================
+
 
 @app.route('/client/<int:client_id>/fitness_plan', methods=['GET'])
 @cross_origin(origin='*')
 def get_fitness_plan(client_id):
     connection = create_connection()
     cursor = connection.cursor(dictionary=True)
+
     cursor.execute("""
         SELECT fp.PlanID, fp.Description, fp.EndDate
         FROM FitnessPlan fp
@@ -97,6 +90,7 @@ def get_fitness_plan(client_id):
 
     close_connection(connection)
     return jsonify(fitness_plans)
+
 
 @app.route('/client/<int:client_id>/trainer', methods=['GET', 'OPTIONS'])
 @cross_origin(origin='*')
@@ -179,15 +173,13 @@ def delete_client_account(client_id):
     close_connection(connection)
     return jsonify({"message": "Client account deleted"})
 
-# ================================================================
-# Trainer Functions
-# ================================================================
-
 @app.route('/trainer/<int:trainer_id>/clients', methods=['GET', 'OPTIONS'])
 @cross_origin(origin='*')
 def view_clients_with_details(trainer_id):
     connection = create_connection()
     cursor = connection.cursor(dictionary=True)
+    
+    # Fetch clients assigned to the trainer
     cursor.execute("""
         SELECT c.client_id, c.FirstName, c.LastName, c.height, c.weight, c.age, c.Email
         FROM Client c
@@ -196,8 +188,64 @@ def view_clients_with_details(trainer_id):
         )
     """, (trainer_id,))
     clients = cursor.fetchall()
+
+    for client in clients:
+        client_id = client['client_id']
+
+        # Fetch fitness plans for the client
+        cursor.execute("""
+            SELECT PlanID, Description, StartDate, EndDate
+            FROM FitnessPlan
+            WHERE ClientID = %s AND TrainerID = %s
+        """, (client_id, trainer_id))
+        fitness_plans = cursor.fetchall()
+
+        for plan in fitness_plans:
+            plan_id = plan['PlanID']
+
+            # Fetch workouts and exercises under this plan
+            cursor.execute("""
+                SELECT w.WorkoutID, w.Name AS WorkoutName, w.Duration
+                FROM Workout w
+                WHERE w.PlanID = %s
+            """, (plan_id,))
+            workouts = cursor.fetchall()
+
+            for workout in workouts:
+                workout_id = workout['WorkoutID']
+                cursor.execute("""
+                    SELECT e.Name AS ExerciseName, e.Reps, e.Sets, e.CaloriesBurned, e.Completed
+                    FROM Exercise e
+                    WHERE e.WorkoutID = %s
+                """, (workout_id,))
+                workout['exercises'] = cursor.fetchall()
+
+            plan['workouts'] = workouts
+
+            # Fetch diets and meals under this plan
+            cursor.execute("""
+                SELECT d.DietID, d.diet_name
+                FROM Diet d
+                WHERE d.PlanID = %s
+            """, (plan_id,))
+            diets = cursor.fetchall()
+
+            for diet in diets:
+                diet_id = diet['DietID']
+                cursor.execute("""
+                    SELECT m.meal_name, m.Calories, m.Protein, m.Carbs, m.Fat, m.Completed
+                    FROM Meal m
+                    WHERE m.DietID = %s
+                """, (diet_id,))
+                diet['meals'] = cursor.fetchall()
+
+            plan['diets'] = diets
+
+        client['fitness_plans'] = fitness_plans
+
     close_connection(connection)
     return jsonify(clients)
+
 
 @app.route('/trainer/<int:trainer_id>/fitness_plans', methods=['GET', 'OPTIONS'])
 @cross_origin(origin='*')
@@ -211,67 +259,107 @@ def view_fitness_plans(trainer_id):
     close_connection(connection)
     return jsonify(fitness_plans)
 
-@app.route('/trainer/<int:trainer_id>/assign_workout', methods=['POST', 'OPTIONS'])
+@app.route('/trainer/<int:trainer_id>/update_plan', methods=['PATCH', 'OPTIONS'])
 @cross_origin(origin='*')
-def assign_workout(trainer_id):
+def update_fitness_plan(trainer_id):
     data = request.json
     plan_id = data.get("plan_id")
-    workout_name = data.get("workout_name")
-    duration = data.get("duration")
+    description = data.get("description")
+    end_date = data.get("end_date")
 
     connection = create_connection()
     cursor = connection.cursor()
     cursor.execute("""
-        INSERT INTO Workout (PlanID, Name, Duration)
-        VALUES (%s, %s, %s)
-    """, (plan_id, workout_name, duration))
+        UPDATE FitnessPlan
+        SET Description = %s, EndDate = %s
+        WHERE PlanID = %s AND TrainerID = %s
+    """, (description, end_date, plan_id, trainer_id))
     connection.commit()
     close_connection(connection)
-    return jsonify({"message": "Workout assigned successfully"}), 201
+    return jsonify({"message": "Fitness plan updated"})
 
-@app.route('/trainer/<int:trainer_id>/assign_meal', methods=['POST', 'OPTIONS'])
+@app.route('/trainer/<int:trainer_id>/set_reminder', methods=['POST', 'OPTIONS'])
 @cross_origin(origin='*')
-def assign_meal(trainer_id):
+def set_reminder(trainer_id):
     data = request.json
-    plan_id = data.get("plan_id")
-    meal_name = data.get("meal_name")
-    calories = data.get("calories")
-    protein = data.get("protein")
-    carbs = data.get("carbs")
-    fat = data.get("fat")
+    client_id = data.get("client_id")
+    message = data.get("message")
+    reminder_date = data.get("reminder_date")
 
     connection = create_connection()
     cursor = connection.cursor()
     cursor.execute("""
-        INSERT INTO Meal (DietID, meal_name, Calories, Protein, Carbs, Fat)
-        VALUES (%s, %s, %s, %s, %s, %s)
-    """, (plan_id, meal_name, calories, protein, carbs, fat))
+        INSERT INTO Reminder (ClientID, TrainerID, Message, ReminderDate)
+        VALUES (%s, %s, %s, %s)
+    """, (client_id, trainer_id, message, reminder_date))
     connection.commit()
     close_connection(connection)
-    return jsonify({"message": "Meal assigned successfully"}), 201
+    return jsonify({"message": "Reminder set for client"})
 
-@app.route('/trainer/unassigned_clients', methods=['GET'])
+@app.route('/trainer/<int:trainer_id>/delete', methods=['DELETE', 'OPTIONS'])
 @cross_origin(origin='*')
-def get_unassigned_clients():
+def delete_trainer_account(trainer_id):
+    connection = create_connection()
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM Trainer WHERE TrainerID = %s", (trainer_id,))
+    connection.commit()
+    close_connection(connection)
+    return jsonify({"message": "Trainer account deleted"})
+
+@app.route('/signup', methods=['POST', 'OPTIONS'])
+@cross_origin(origin='http://localhost:3000')
+def signup():
+    data = request.json
+    user_type = data.get("user_type")
+    email = data.get("email")
+    password = data.get("password").encode('utf-8')  # Encode the password
+    first_name = data.get("firstName")
+    last_name = data.get("lastName")
+    
+    # Hash the password
+    hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+
+    connection = create_connection()
+    cursor = connection.cursor()
+    
+    if user_type == 'client':
+        height = data.get("height")
+        weight = data.get("weight")
+        age = data.get("age")
+        cursor.execute("""
+            INSERT INTO Client (FirstName, LastName, Email, Password, height, weight, age)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (first_name, last_name, email, hashed_password, height, weight, age))
+        
+    elif user_type == 'trainer':
+        specialty = data.get("specialty") 
+        cursor.execute("""
+            INSERT INTO Trainer (FirstName, LastName, Email, Password, Specialty)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (first_name, last_name, email, hashed_password, specialty))
+    
+    connection.commit()
+    close_connection(connection)
+    return jsonify({"message": "Signup successful"})
+
+@app.route('/trainer/<int:trainer_id>/unassigned_clients', methods=['GET'])
+@cross_origin(origin='*')
+def view_unassigned_clients(trainer_id):
     connection = create_connection()
     cursor = connection.cursor(dictionary=True)
     
-    # Query to find clients without a trainer (no associated fitness plan)
     cursor.execute("""
-        SELECT c.client_id, c.FirstName, c.LastName, c.Email, c.Height, c.Weight, c.Age
+        SELECT c.client_id, c.FirstName, c.LastName, c.height, c.weight, c.age, c.Email
         FROM Client c
         WHERE c.client_id NOT IN (
-            SELECT DISTINCT ClientID
-            FROM FitnessPlan
-            WHERE TrainerID IS NOT NULL
+            SELECT ClientID FROM FitnessPlan WHERE TrainerID IS NOT NULL
         )
     """)
     unassigned_clients = cursor.fetchall()
     close_connection(connection)
-
     return jsonify(unassigned_clients)
 
-@app.route('/trainer/<int:trainer_id>/assign_client', methods=['POST', 'OPTIONS'])
+@app.route('/trainer/<int:trainer_id>/assign_client', methods=['POST'])
 @cross_origin(origin='*')
 def assign_client_to_trainer(trainer_id):
     data = request.json
@@ -283,87 +371,14 @@ def assign_client_to_trainer(trainer_id):
     connection = create_connection()
     cursor = connection.cursor()
 
-    try:
-        # Check if the client is already assigned to a trainer
-        cursor.execute("""
-            SELECT TrainerID
-            FROM FitnessPlan
-            WHERE ClientID = %s
-        """, (client_id,))
-        existing_assignment = cursor.fetchone()
-
-        if existing_assignment:
-            return jsonify({"error": "Client is already assigned to a trainer"}), 400
-
-        # Assign the client to the trainer by creating a fitness plan
-        cursor.execute("""
-            INSERT INTO FitnessPlan (ClientID, TrainerID, StartDate, Description)
-            VALUES (%s, %s, CURDATE(), 'New Fitness Plan')
-        """, (client_id, trainer_id))
-        connection.commit()
-
-        return jsonify({"message": "Client successfully assigned to trainer"}), 201
-
-    except Error as e:
-        connection.rollback()
-        return jsonify({"error": str(e)}), 500
-    finally:
-        close_connection(connection)
-
-
-# ================================================================
-# Admin Functions
-# ================================================================
-
-@app.route('/admin/users', methods=['GET'])
-def get_all_users():
-    connection = create_connection()
-    cursor = connection.cursor(dictionary=True)
     cursor.execute("""
-        SELECT id, FirstName, LastName, Email, UserType, Height, Weight, Age, Specialty
-        FROM (
-            SELECT client_id AS id, FirstName, LastName, Email, 'client' AS UserType, Height, Weight, Age, NULL AS Specialty
-            FROM Client
-            UNION
-            SELECT TrainerID AS id, FirstName, LastName, Email, 'trainer' AS UserType, NULL AS Height, NULL AS Weight, NULL AS Age, Specialty
-            FROM Trainer
-        ) AS users
-    """)
-    users = cursor.fetchall()
-    close_connection(connection)
-    return jsonify(users)
-
-@app.route('/admin/create_user', methods=['POST'])
-def create_user():
-    data = request.json
-    user_type = data.get("userType")
-    connection = create_connection()
-    cursor = connection.cursor()
-    if user_type == 'client':
-        cursor.execute("""
-            INSERT INTO Client (FirstName, LastName, Email, Password, Height, Weight, Age)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """, (data['firstName'], data['lastName'], data['email'], data['password'], data['height'], data['weight'], data['age']))
-    elif user_type == 'trainer':
-        cursor.execute("""
-            INSERT INTO Trainer (FirstName, LastName, Email, Password, Specialty)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (data['firstName'], data['lastName'], data['email'], data['password'], data['specialty']))
-    else:
-        return jsonify({"error": "Invalid user type"}), 400
+        INSERT INTO FitnessPlan (ClientID, TrainerID, StartDate, Description)
+        VALUES (%s, %s, CURDATE(), 'New Fitness Plan')
+    """, (client_id, trainer_id))
     connection.commit()
     close_connection(connection)
-    return jsonify({"message": "User created successfully"})
+    return jsonify({"message": "Client successfully assigned to trainer"}), 201
 
-@app.route('/admin/delete_user/<int:user_id>', methods=['DELETE'])
-def delete_user(user_id):
-    connection = create_connection()
-    cursor = connection.cursor()
-    cursor.execute("DELETE FROM Client WHERE client_id = %s", (user_id,))
-    cursor.execute("DELETE FROM Trainer WHERE TrainerID = %s", (user_id,))
-    connection.commit()
-    close_connection(connection)
-    return jsonify({"message": "User deleted successfully"})
 
 @app.after_request
 def apply_cors(response):
