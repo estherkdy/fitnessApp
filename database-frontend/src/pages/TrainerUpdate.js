@@ -10,8 +10,9 @@ function TrainerUpdate() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
-    const [confirmPasswordText, setConfirmPasswordText] = useState('Confirm your password:');
+    const [confirmPasswordText, setConfirmPasswordText] = useState('Confirm password:');
     const [isError] = useState(false); // Track if there's an error
+    const [trainerSpecialty, setTrainerSpecialty] = useState(null);
 
     const trainerId = localStorage.getItem('trainerID');
 
@@ -30,6 +31,9 @@ function TrainerUpdate() {
     const handleLastName = (event) => {
         setLastName(event.target.value);
     };
+    const handleTrainerSpecialty = (event) => {
+        setTrainerSpecialty(event.target.value);
+    };
 
     const deleteAccount = async () => {
         try {
@@ -43,7 +47,7 @@ function TrainerUpdate() {
     };
 
     return(
-        <div>
+        <div className='center-container'>
             <button className='back-button' title="Back" onClick={() => navigate(-1)}>Back</button>
             <h1>Update Select Info</h1>
             <div>
@@ -67,7 +71,7 @@ function TrainerUpdate() {
                 />
             </div>
             <div>
-                <label htmlFor="emailInput">Please enter your new email:</label>
+                <label htmlFor="emailInput">Email:</label>
                 <input
                     id="emailInput"
                     type="text"
@@ -77,7 +81,7 @@ function TrainerUpdate() {
                 />
             </div>
             <div>
-                <label htmlFor="passwordInput">Please enter your new password:</label>
+                <label htmlFor="passwordInput">Password:</label>
                 <input
                     id="passwordInput"
                     type="password"
@@ -99,6 +103,15 @@ function TrainerUpdate() {
                     onChange={handleConfirmPassword}
                     placeholder="confirm password"
                 />
+                <label htmlFor="trainerSpecialtySelect">Select your trainer specialty:</label>
+                <select id="trainerSpecialtySelect" value={trainerSpecialty} onChange={handleTrainerSpecialty}>
+                    <option value="">Select your trainer specialty</option>
+                    <option value="client">Strength Training</option>
+                    <option value="trainer">Muscular Endurance</option>
+                    <option value="trainer">Cardiovascular Endurance</option>
+                    <option value="trainer">Dietician</option>
+                    <option value="trainer">Life Coach</option>
+                </select>
             </div>
             <button>Update</button>
 

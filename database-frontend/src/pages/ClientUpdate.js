@@ -13,7 +13,7 @@ function ClientUpdate() {
     const [height, setHeight] = useState('');
     const [weight, setWeight] = useState('');
     const [age, setAge] = useState('');
-    const [confirmPasswordText, setConfirmPasswordText] = useState('Confirm your password:');
+    const [confirmPasswordText, setConfirmPasswordText] = useState('Confirm password:');
     const [isError, setIsError] = useState(false); // Track if there's an error
 
     const handleEmail = (event) => {
@@ -55,7 +55,7 @@ function ClientUpdate() {
     };
 
     return(
-        <div>
+        <div className='center-container'>
             <button className='back-button' title="Back" onClick={() => navigate(-1)}>Back</button>
             <h1>Update Select Info</h1>
             <div>
