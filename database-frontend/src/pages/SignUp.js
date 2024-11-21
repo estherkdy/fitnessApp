@@ -36,14 +36,20 @@ function SignUp() {
     const handleLastName = (event) => {
         setLastName(event.target.value);
     };
+ 
     const handleHeight = (event) => {
-        setHeight(event.target.value);
+        const value = Math.max(0, event.target.value);  
+        setHeight(value);
     };
+ 
     const handleWeight = (event) => {
-        setWeight(event.target.value);
+        const value = Math.max(0, event.target.value);  
+        setWeight(value);
     };
+ 
     const handleAge = (event) => {
-        setAge(event.target.value);
+        const value = Math.max(0, event.target.value);  
+        setAge(value);
     };
 
     const handleSignUp = async () => {
