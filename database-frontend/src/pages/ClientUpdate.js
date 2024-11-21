@@ -43,16 +43,14 @@ function ClientUpdate() {
 
     const clientId = localStorage.getItem('clientId');
 
- 
-      const deleteAccount = async () => {
-        try { 
-            const response = await axios.delete(`/client/${clientId}/delete`);
+    const deleteAccount = async () => {
+        try {
+            await axios.delete(`/client/${clientId}/delete`);
             alert('Account deleted');
-            localStorage.removeItem('clientId');   
-            navigate('/');   
+            localStorage.removeItem('clientId');
+            navigate('/');
         } catch (error) {
             console.error('Error deleting account:', error);
-            alert('There was an error deleting your account. Please try again.');
         }
     };
 
