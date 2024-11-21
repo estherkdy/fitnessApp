@@ -11,6 +11,7 @@ function TrainerHome() {
     const [reminderMessage, setReminderMessage] = useState("");
     const [reminderDate, setReminderDate] = useState("");
     const [selectedClientId, setSelectedClientId] = useState(null);
+    const [selectedClient, setSelectedClient] = useState(null);
     const [plansFetched, setPlansFetched] = useState(false);
     const [clientsFetched, setClientsFetched] = useState(false);
     const [editingPlanId, setEditingPlanId] = useState(null); 
@@ -93,9 +94,9 @@ function TrainerHome() {
                     <p>No unassigned clients found.</p>
                 )
             )
-            } catch (error) {
-                console.error('Error fetching unassigned clients:', error);
-            }
+        } catch (error) {
+            console.error('Error fetching unassigned clients:', error);
+        }
     };
 
     const assignClient = async () => {
@@ -114,6 +115,37 @@ function TrainerHome() {
             console.error('Error assigning client:', error);
         }
     };
+
+    const selectClientFitnessPlan = async () => {
+        try {
+            const response = await axios.get(`/trainer/${trainerId}/clients`);
+            const data = response.data;
+            setUnassignedClients(data);
+            openModal(
+                data.length > 0 ? (
+                    <div>
+                        <h2>Clients</h2>
+                        <select
+                            onChange={(e) => selectedClient(e.target.value)}
+                            value={selectedClient}
+                        >
+                            <option value="" disabled>Select a client</option>
+                            {data.map(client => (
+                                <option key={client.client_id} value={client.client_id}>
+                                    {client.FirstName} {client.LastName} ({client.Email})
+                                </option>
+                            ))}
+                        </select>
+                        <button onClick={viewFitnessPlans}>Select Client</button> {/* need to use selected client to viewFitnessPlans */}
+                    </div>
+                ) : (
+                    <p>No clients found.</p>
+                )
+            )
+        } catch (error) {
+            console.error('Error fetching unassigned clients:', error);
+        }
+    }
 
     const viewFitnessPlans = async () => {
         setPlansFetched(true);
@@ -326,13 +358,27 @@ function TrainerHome() {
             console.error('Error assigning meal:', error);
         }
     };
-    
 
+    const viewStats = async () => {
+        let numClients = 0 // get number of clients
+        let numReminders = 0; // get number of reminders sent
+        let numExercises = 0; // get number of exercises created
+        let numMeals = 0; // get number of meals created
+        openModal(
+            <div>
+                <p>Current number of clients: {numClients}</p>
+                <p>Reminders sent: {numReminders}</p>
+                <p>Exercises created: {numExercises}</p>
+                <p>Meals created: {numMeals}</p>
+            </div>
+        )
+    }
+    
     return (
         <div className="client-home">
             <div className="button-box">
                 <button className="logout-button" onClick={() => navigate('/')}>Log Out</button>
-                <button className="stats">Your Statistics</button>
+                <button className="stats" onClick={viewStats}>Your Statistics</button>
                 <button className="update-button" onClick={() => navigate('/trainerupdate')}>View Profile</button>
             </div>
             <div className='box'>
@@ -343,7 +389,7 @@ function TrainerHome() {
                 <button className='button' onClick={viewUnassignedClients}>View Unassigned Clients</button>
 
                 {/* View Fitness Plans */}
-                <button className='button' onClick={viewFitnessPlans}>View Fitness Plans</button>
+                <button className='button' onClick={selectClientFitnessPlan}>View Fitness Plans</button>
 
                 {/* Send Reminder */}
                 <button className='button' onClick={openSendReminder}>Send Reminder</button>
