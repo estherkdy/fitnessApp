@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './SignUp.css'; 
+import './SignUp.css';
 
 function SignUp() {
     const navigate = useNavigate();
@@ -15,7 +15,8 @@ function SignUp() {
     const [weight, setWeight] = useState('');
     const [age, setAge] = useState('');
     const [confirmPasswordText, setConfirmPasswordText] = useState('Confirm your password:');
-    const [isError, setIsError] = useState(false); // Track if there's an error
+    const [isError, setIsError] = useState(false);  
+    const [emailError, setEmailError] = useState(''); 
 
     const handleEmail = (event) => {
         setEmail(event.target.value);
@@ -35,18 +36,33 @@ function SignUp() {
     const handleLastName = (event) => {
         setLastName(event.target.value);
     };
+ 
     const handleHeight = (event) => {
-        setHeight(event.target.value);
+        const value = Math.max(0, event.target.value);  
+        setHeight(value);
     };
+ 
     const handleWeight = (event) => {
-        setWeight(event.target.value);
+        const value = Math.max(0, event.target.value);  
+        setWeight(value);
     };
+ 
     const handleAge = (event) => {
-        setAge(event.target.value);
+        const value = Math.max(0, event.target.value);  
+        setAge(value);
     };
-    
+
     const handleSignUp = async () => {
         console.log('Sign up button clicked');
+        
+        // Email validation
+        if (!email.includes('@')) {
+            setEmailError('Please enter a valid email address.');
+            return;  
+        } else {
+            setEmailError('');  
+        }
+
         if (password === confirmPassword) {
             console.log('Passwords match');
             setConfirmPasswordText('Confirm your password:');
@@ -87,6 +103,7 @@ function SignUp() {
         <div>
             <button className='back-button' title="Back" onClick={() => navigate(-1)}>Back</button>
             <h1>Sign Up</h1>
+            
             <div>
                 <label htmlFor="firstNameInput">First Name:</label>
                 <input
@@ -183,6 +200,9 @@ function SignUp() {
                     </div>
                 </>
             )}
+            
+            {emailError && <div className="error-text">{emailError}</div>}
+            
             <button disabled={disabled} onClick={handleSignUp}>Sign Up</button>
         </div>
     );

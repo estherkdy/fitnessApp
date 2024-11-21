@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import mysql.connector
 from mysql.connector import Error
 from flask_cors import CORS, cross_origin
+import bcrypt
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
@@ -11,7 +12,7 @@ def create_connection():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="Bigfoot1211!",
+            password="root",
             database="calorie_tracker"
         )
         if connection.is_connected():
@@ -31,26 +32,27 @@ def close_connection(connection):
 def login():
     data = request.json
     email = data.get("email")
-    password = data.get("password")
+    password = data.get("password").encode('utf-8')  # Encode the password
     user_type = data.get("user_type")
 
     connection = create_connection()
     cursor = connection.cursor(dictionary=True)
 
     if user_type == 'client':
-        cursor.execute("SELECT * FROM Client WHERE Email = %s AND Password = %s", (email, password))
+        cursor.execute("SELECT * FROM Client WHERE Email = %s", (email,))
     elif user_type == 'trainer':
-        cursor.execute("SELECT * FROM Trainer WHERE Email = %s AND Password = %s", (email, password))
+        cursor.execute("SELECT * FROM Trainer WHERE Email = %s", (email,))
     else:
         return jsonify({"error": "Invalid user type"}), 400
 
     result = cursor.fetchone()
     close_connection(connection)
 
-    if result and user_type == 'client':
-        return jsonify({"message": "Login successful", "user_data": result, "client_id": result["client_id"]})
-    elif result and user_type =='trainer':
-        return jsonify({"message": "Login successful", "user_data": result, "trainer_id": result["TrainerID"]})
+    if result and bcrypt.checkpw(password, result['Password'].encode('utf-8')):
+        if user_type == 'client':
+            return jsonify({"message": "Login successful", "user_data": result, "client_id": result["client_id"]})
+        elif user_type == 'trainer':
+            return jsonify({"message": "Login successful", "user_data": result, "trainer_id": result["TrainerID"]})
     else:
         return jsonify({"message": "Invalid credentials"}), 401
 
@@ -310,10 +312,13 @@ def signup():
     data = request.json
     user_type = data.get("user_type")
     email = data.get("email")
-    password = data.get("password")
+    password = data.get("password").encode('utf-8')  # Encode the password
     first_name = data.get("firstName")
     last_name = data.get("lastName")
     
+    # Hash the password
+    hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+
     connection = create_connection()
     cursor = connection.cursor()
     
@@ -324,23 +329,18 @@ def signup():
         cursor.execute("""
             INSERT INTO Client (FirstName, LastName, Email, Password, height, weight, age)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """, (first_name, last_name, email, password, height, weight, age))
+        """, (first_name, last_name, email, hashed_password, height, weight, age))
         
     elif user_type == 'trainer':
         specialty = data.get("specialty") 
         cursor.execute("""
             INSERT INTO Trainer (FirstName, LastName, Email, Password, Specialty)
             VALUES (%s, %s, %s, %s, %s)
-        """, (first_name, last_name, email, password, specialty))
-        
-    else:
-        close_connection(connection)
-        return jsonify({"error": "Invalid user type"}), 400
-
+        """, (first_name, last_name, email, hashed_password, specialty))
+    
     connection.commit()
     close_connection(connection)
-    
-    return jsonify({"message": "Sign up successful!"}), 201
+    return jsonify({"message": "Signup successful"})
 
 @app.route('/trainer/<int:trainer_id>/unassigned_clients', methods=['GET'])
 @cross_origin(origin='*')
