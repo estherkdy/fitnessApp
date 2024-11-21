@@ -331,11 +331,38 @@ function ClientHome() {
         )
     }
 
+    const [caloriesConsumed, setCaloriesConsumed] = useState(0);
+    const [caloriesBurned, setCaloriesBurned] = useState(0);
+    const [netCalories, setNetCalories] = useState(0);
+    const [statDate, setStateDate] = useState('');
+    
+
+    const handleStats = async () => {
+        openModal(
+            <div>
+                <label>Select a day</label>
+                <input
+                    type="date"
+                    name="date"
+                    value={statDate}
+                    onChange={handleStatCalc}
+                />
+                <p>Calories consumed: {caloriesConsumed}</p>
+                <p>Calories burned: {caloriesBurned}</p>
+                <p>Net Calorie Count: {netCalories}</p>
+            </div>
+        )
+    }
+
+    const handleStatCalc = async () => {
+        // using statDate go into database and get data to do calculations to update in handleStats
+    }
+
     return (
         <div className='client-home'>
             <div className="button-box">
                 <button className="logout-button" onClick={() => navigate('/')}>Log Out</button>
-                <button className='stats'>Your Statistics</button>
+                <button className='stats' onClick={handleStats}>Your Statistics</button>
                 <button className="update-button" onClick={() => navigate('/clientupdate')}>View Profile</button>
             </div>
             <div className='box'>
