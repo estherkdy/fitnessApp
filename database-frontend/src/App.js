@@ -16,7 +16,6 @@ import AdminHome from './pages/AdminHome';
 function App() {
   return (
     <Router>
-      <div className="centered-container">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/clientlogin" element={<ClientLogin />} />
@@ -29,7 +28,6 @@ function App() {
           <Route path="/trainerupdate" element={<TrainerUpdate />} />
           <Route path="/clientupdate" element={<ClientUpdate />} />
         </Routes>
-      </div>
     </Router>
   );
 }

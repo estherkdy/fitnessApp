@@ -39,27 +39,29 @@ function ClientLogin() {
     const disabled = !email || !password;
 
     return (
-        <div className='login'>
-            <button className='back-button' title="Back" onClick={() => navigate(-1)}>Back</button>
-            <h1>Client Login</h1>
-            <div className="input-row">
-                <input 
-                    type="text" 
-                    value={email} 
-                    onChange={handleEmail} 
-                    placeholder="Email"
-                />
-            </div>
+        <div className='center-container'>
+            <div className='login'>
+                <button className='back-button' title="Back" onClick={() => navigate(-1)}>Back</button>
+                <h1>Client Login</h1>
+                <div className="input-row">
+                    <input 
+                        type="text" 
+                        value={email} 
+                        onChange={handleEmail} 
+                        placeholder="Email"
+                    />
+                </div>
 
-            <div className="input-row">
-                <input 
-                    type="password" 
-                    value={password} 
-                    onChange={handlePassword} 
-                    placeholder="Password"
-                />
+                <div className="input-row">
+                    <input 
+                        type="password" 
+                        value={password} 
+                        onChange={handlePassword} 
+                        placeholder="Password"
+                    />
+                </div>
+                <button disabled={disabled} onClick={handleLogin}>Log In</button>
             </div>
-            <button disabled={disabled} onClick={handleLogin}>Log In</button>
         </div>
     );
 }

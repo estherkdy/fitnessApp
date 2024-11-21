@@ -14,6 +14,44 @@ function ClientHome() {
     const [trainerFetched, setTrainerFetched] = useState(false);
     const [fitnessPlanFetched, setFitnessPlanFetched] = useState(false);
     const [remindersFetched, setRemindersFetched] = useState(false);
+    const [showExerciseForm, setShowExerciseForm] = useState(false);
+    const [showMealForm, setShowMealForm] = useState(false);
+    const [exercises, setExercises] = useState([]);
+    const [meals, setMeals] = useState([]);
+
+    const addExercise = () => {
+        setExercises([...exercises, exerciseData]);
+        setExerciseData({ name: '', reps: '', sets: '', duration: '', calories: '' });
+    };
+
+    const addMeal = () => {
+        setMeals([...meals, mealData]);
+        setMealData({ name: '', calories: '', protein: '', carbs: '', fat: '' });
+    };
+
+    const [exerciseData, setExerciseData] = useState({
+        name: '',
+        reps: '',
+        sets: '',
+        duration: '',
+        calories: ''
+    });
+
+    const [mealData, setMealData] = useState({
+        name: '',
+        calories: '',
+        protein: '',
+        carbs: '',
+        fat: ''
+    });
+
+    const handleExerciseChange = (e) => {
+        setExerciseData({ ...exerciseData, [e.target.name]: e.target.value });
+    };
+
+    const handleMealChange = (e) => {
+        setMealData({ ...mealData, [e.target.name]: e.target.value });
+    };
 
     const clientId = localStorage.getItem('clientId');
 
@@ -100,8 +138,95 @@ function ClientHome() {
             console.error('Error fetching fitness plan:', error);
         }
     };
-    
 
+    const openExerciseForm = () => {
+        openModal(
+            <div className="form-section">
+                <h3>Log Exercise</h3>
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Exercise Name"
+                    value={exerciseData.name}
+                    onChange={handleExerciseChange}
+                />
+                <input
+                    type="number"
+                    name="reps"
+                    placeholder="Reps"
+                    value={exerciseData.reps}
+                    onChange={handleExerciseChange}
+                />
+                <input
+                    type="number"
+                    name="sets"
+                    placeholder="Sets"
+                    value={exerciseData.sets}
+                    onChange={handleExerciseChange}
+                />
+                <input
+                    type="number"
+                    name="duration"
+                    placeholder="Duration (minutes)"
+                    value={exerciseData.duration}
+                    onChange={handleExerciseChange}
+                />
+                <input
+                    type="number"
+                    name="calories"
+                    placeholder="Calories Burned"
+                    value={exerciseData.calories}
+                    onChange={handleExerciseChange}
+                />
+                <button onClick={addExercise}>Add Exercise</button>
+            </div>
+        )
+    } 
+
+    const openMealForm = () => {
+        openModal(
+            <div className="form-section">
+                <h3>Log Meal</h3>
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Meal Name"
+                    value={mealData.name}
+                    onChange={handleMealChange}
+                />
+                <input
+                    type="number"
+                    name="calories"
+                    placeholder="Calories"
+                    value={mealData.calories}
+                    onChange={handleMealChange}
+                />
+                <input
+                    type="number"
+                    name="protein"
+                    placeholder="Protein (g)"
+                    value={mealData.protein}
+                    onChange={handleMealChange}
+                />
+                <input
+                    type="number"
+                    name="carbs"
+                    placeholder="Carbs (g)"
+                    value={mealData.carbs}
+                    onChange={handleMealChange}
+                />
+                <input
+                    type="number"
+                    name="fat"
+                    placeholder="Fat (g)"
+                    value={mealData.fat}
+                    onChange={handleMealChange}
+                />
+                <button onClick={addMeal}>Add Meal</button>
+            </div>
+        )
+    }
+    
     const updateExerciseStatus = async (exerciseId, completed) => {
         try {
             await axios.patch(`/client/${clientId}/exercise_status`, {
@@ -167,24 +292,28 @@ function ClientHome() {
     };
 
     return (
-        <div className="home">
+        <div className='client-home'>
             <div className="button-box">
                 <button className="logout-button" onClick={() => navigate('/')}>Log Out</button>
+                <button className='stats'>User Statistics</button>
                 <button className="update-button" onClick={() => navigate('/clientupdate')}>View Profile</button>
             </div>
-            <h1>Client Home Page</h1>
+            <div className='box'>
+                {/* Trainer Info */}
+                <button className='button' onClick={getTrainer}>View Trainer Info</button>
 
-            {/* Trainer Info */}
-            <button onClick={getTrainer}>View Trainer Info</button>
+                {/* Fitness Plan */}
+                <button className='button' onClick={viewFitnessPlan}>View Fitness Plan</button>
 
-            <ClientLog />
+                {/* Exercise Section */}
+                <button className='button' onClick={openExerciseForm}>Log Exercise</button>
 
-            {/* Fitness Plan */}
-            <button onClick={viewFitnessPlan}>View Fitness Plan</button>
+                {/* Meal Section */}
+                <button className='button' onClick={openMealForm}>Log Meal</button>
 
-            {/* Reminders */}
-            <button onClick={checkReminders}>Check Reminders</button>
-
+                {/* Reminders */}
+                <button className='button' onClick={checkReminders}>Check Reminders</button>
+            </div>
 
             {/* Modal */}
             <Modal isOpen={modalOpen} onClose={closeModal}>

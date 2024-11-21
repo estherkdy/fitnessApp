@@ -319,29 +319,25 @@ function TrainerHome() {
     
 
     return (
-        <div className="home">
+        <div className="client-home">
             <div className="button-box">
-                <button className="logout-button" onClick={() => navigate('/')}>
-                    Log Out
-                </button>
-                <button className="update-button" onClick={() => navigate('/trainerupdate')}>
-                    View Profile
-                </button>
+                <button className="logout-button" onClick={() => navigate('/')}>Log Out</button>
+                <button className="stats">User Statistics</button>
+                <button className="update-button" onClick={() => navigate('/trainerupdate')}>View Profile</button>
             </div>
-            <h1>Trainer Home Page</h1>
+            <div className='box'>
+                {/* View Clients */}
+                <button className='button' onClick={viewClients}>View Clients</button>
 
-            {/* View Clients */}
-            <button onClick={viewClients}>View Clients</button>
+                {/* View Unassigned Clients */}
+                <button className='button' onClick={viewUnassignedClients}>View Unassigned Clients</button>
 
-            {/* View Unassigned Clients */}
-            <button onClick={viewUnassignedClients}>View Unassigned Clients</button>
+                {/* View Fitness Plans */}
+                <button className='button' onClick={viewFitnessPlans}>View Fitness Plans</button>
 
-            {/* View Fitness Plans */}
-            <button onClick={viewFitnessPlans}>View Fitness Plans</button>
-
-
-            {/* Send Reminder */}
-            <button onClick={openSendReminder}>Send Reminder</button>
+                {/* Send Reminder */}
+                <button className='button' onClick={openSendReminder}>Send Reminder</button>
+            </div>
 
             {/* Modal */}
             <Modal isOpen={modalOpen} onClose={closeModal}>
