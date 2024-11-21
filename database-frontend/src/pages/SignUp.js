@@ -17,7 +17,7 @@ function SignUp() {
     const [confirmPasswordText, setConfirmPasswordText] = useState('Confirm your password:');
     const [isError, setIsError] = useState(false);  
     const [emailError, setEmailError] = useState(''); 
-    const [trainerSpecialty, setTrainerSpecialty] = useState(null);
+    const [specialty, setSpecialty] = useState(null);
 
     const handleEmail = (event) => {
         setEmail(event.target.value);
@@ -37,8 +37,8 @@ function SignUp() {
     const handleLastName = (event) => {
         setLastName(event.target.value);
     };
-    const handleTrainerSpecialty = (event) => {
-        setTrainerSpecialty(event.target.value);
+    const handleSpecialty = (event) => {
+        setSpecialty(event.target.value);
     };
     const handleHeight = (event) => {
         const value = Math.max(0, event.target.value);  
@@ -48,7 +48,6 @@ function SignUp() {
         const value = Math.max(0, event.target.value);  
         setWeight(value);
     };
- 
     const handleAge = (event) => {
         const value = Math.max(0, event.target.value);  
         setAge(value);
@@ -77,7 +76,7 @@ function SignUp() {
                 password,
                 user_type: userType,
                 ...(userType === 'client' && { height, weight, age }),
-                ...(userType === 'trainer' && { trainerSpecialty }),
+                ...(userType === 'trainer' && { specialty }),
             };
     
             try {
@@ -99,7 +98,7 @@ function SignUp() {
         }
     };
 
-    const disabled = !email || !password || !confirmPassword || !userType || (userType === 'client' && (!height || !weight || !age)) || !firstName || !lastName || (userType === 'trainer' && (!trainerSpecialty));
+    const disabled = !email || !password || !confirmPassword || !userType || (userType === 'client' && (!height || !weight || !age)) || !firstName || !lastName || (userType === 'trainer' && (!specialty));
 
     return (
         <div className='center-container'>
@@ -204,8 +203,8 @@ function SignUp() {
             )}
             {userType === 'trainer' && (
                 <>
-                    <label htmlFor="trainerSpecialtySelect">Select your trainer specialty:</label>
-                    <select id="trainerSpecialtySelect" value={trainerSpecialty} onChange={handleTrainerSpecialty}>
+                    <label htmlFor="specialtySelect">Select your trainer specialty:</label>
+                    <select id="specialtySelect" value={specialty} onChange={handleSpecialty}>
                         <option value="">Select your trainer specialty</option>
                         <option value="strength_training">Strength Training</option>
                         <option value="muscular_endurance">Muscular Endurance</option>

@@ -336,7 +336,7 @@ def signup():
     elif user_type == 'trainer':
         specialty = data.get("specialty") 
         cursor.execute("""
-            INSERT INTO Trainer (FirstName, LastName, Email, Password, Specialty)
+            INSERT INTO Trainer (FirstName, LastName, Email, Password, specialty)
             VALUES (%s, %s, %s, %s, %s)
         """, (first_name, last_name, email, hashed_password, specialty))
     

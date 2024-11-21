@@ -18,6 +18,7 @@ function ClientHome() {
     const [showMealForm, setShowMealForm] = useState(false);
     const [exercises, setExercises] = useState([]);
     const [meals, setMeals] = useState([]);
+    const [specialty, setSpecialty] = useState(null);
 
     const addExercise = () => {
         setExercises([...exercises, exerciseData]);
@@ -34,7 +35,8 @@ function ClientHome() {
         reps: '',
         sets: '',
         duration: '',
-        calories: ''
+        calories: '',
+        date: ''
     });
 
     const [mealData, setMealData] = useState({
@@ -42,7 +44,8 @@ function ClientHome() {
         calories: '',
         protein: '',
         carbs: '',
-        fat: ''
+        fat: '',
+        date: ''
     });
 
     const handleExerciseChange = (e) => {
@@ -167,7 +170,7 @@ function ClientHome() {
                 <input
                     type="number"
                     name="duration"
-                    placeholder="Duration (minutes)"
+                    placeholder="Duration (mins)"
                     value={exerciseData.duration}
                     onChange={handleExerciseChange}
                 />
@@ -176,6 +179,12 @@ function ClientHome() {
                     name="calories"
                     placeholder="Calories Burned"
                     value={exerciseData.calories}
+                    onChange={handleExerciseChange}
+                />
+                <input
+                    type="date"
+                    name="date"
+                    value={exerciseData.date}
                     onChange={handleExerciseChange}
                 />
                 <button onClick={addExercise}>Add Exercise</button>
@@ -220,6 +229,12 @@ function ClientHome() {
                     name="fat"
                     placeholder="Fat (g)"
                     value={mealData.fat}
+                    onChange={handleMealChange}
+                />
+                <input
+                    type="date"
+                    name="date"
+                    value={mealData.date}
                     onChange={handleMealChange}
                 />
                 <button onClick={addMeal}>Add Meal</button>
@@ -291,16 +306,44 @@ function ClientHome() {
         }
     };
 
+    const handleSpecialty = async (event) => {
+        // open modal with list of trainers with selected specialty from search trainers
+        const selectedSpecialty = event.target.value;
+        setSpecialty(selectedSpecialty);
+        openModal(
+            // show list of trainers with specialty
+        )
+    }
+
+    const searchTrainers = () => {
+        openModal(
+            <>
+                <label htmlFor="specialtySelect">Select your trainer specialty:</label>
+                <select id="specialtySelect" value={specialty} onChange={handleSpecialty}>
+                    <option value="">Select your trainer specialty</option>
+                    <option value="strength_training">Strength Training</option>
+                    <option value="muscular_endurance">Muscular Endurance</option>
+                    <option value="cardio_endurance">Cardiovascular Endurance</option>
+                    <option value="dietician">Dietician</option>
+                    <option value="life_coach">Life Coach</option>
+                </select>
+            </>
+        )
+    }
+
     return (
         <div className='client-home'>
             <div className="button-box">
                 <button className="logout-button" onClick={() => navigate('/')}>Log Out</button>
-                <button className='stats'>User Statistics</button>
+                <button className='stats'>Your Statistics</button>
                 <button className="update-button" onClick={() => navigate('/clientupdate')}>View Profile</button>
             </div>
             <div className='box'>
                 {/* Trainer Info */}
                 <button className='button' onClick={getTrainer}>View Trainer Info</button>
+
+                {/* Trainer Info */}
+                <button className='button' onClick={searchTrainers}>Search Trainers</button>
 
                 {/* Fitness Plan */}
                 <button className='button' onClick={viewFitnessPlan}>View Fitness Plan</button>

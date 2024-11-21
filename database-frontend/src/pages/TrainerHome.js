@@ -121,6 +121,16 @@ function TrainerHome() {
             const response = await axios.get(`/trainer/${trainerId}/fitness_plans`);
             const data = response.data;
             setFitnessPlans(data);
+
+            if (data.length === 0) {
+                openModal(
+                    <div>
+                        <p>No fitness plans available.</p>
+                    </div>
+                );
+                return;
+            }
+
             openModal(
                 <div>
                     {data.map(plan => (
@@ -322,7 +332,7 @@ function TrainerHome() {
         <div className="client-home">
             <div className="button-box">
                 <button className="logout-button" onClick={() => navigate('/')}>Log Out</button>
-                <button className="stats">User Statistics</button>
+                <button className="stats">Your Statistics</button>
                 <button className="update-button" onClick={() => navigate('/trainerupdate')}>View Profile</button>
             </div>
             <div className='box'>
