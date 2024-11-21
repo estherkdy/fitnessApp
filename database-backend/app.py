@@ -163,6 +163,8 @@ def check_reminders(client_id):
     close_connection(connection)
     return jsonify(reminders)
 
+ 
+
 @app.route('/client/<int:client_id>/delete', methods=['DELETE', 'OPTIONS'])
 @cross_origin(origin='*')
 def delete_client_account(client_id):
