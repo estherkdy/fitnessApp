@@ -382,6 +382,124 @@ def assign_client_to_trainer(trainer_id):
     return jsonify({"message": "Client successfully assigned to trainer"}), 201
 
 
+
+@app.route('/trainer/<int:trainer_id>/assigned_clients', methods=['GET', 'OPTIONS'])
+@cross_origin(origin='*')
+def view_assigned_clients(trainer_id):
+    connection = create_connection()
+    cursor = connection.cursor(dictionary=True)
+     
+    cursor.execute("""
+        SELECT c.client_id, c.FirstName, c.LastName, c.height, c.weight, c.age, c.Email
+        FROM Client c
+        WHERE c.client_id IN (
+            SELECT ClientID FROM FitnessPlan WHERE TrainerID = %s
+        )
+    """, (trainer_id,))
+    clients = cursor.fetchall()
+ 
+    num_clients = len(clients)
+  
+    response = {
+        "num_clients": num_clients,
+        "clients": clients
+    }
+
+    close_connection(connection)
+    return jsonify(response)
+
+
+
+@app.route('/trainer/<int:trainer_id>/reminders_sent', methods=['GET', 'OPTIONS'])
+@cross_origin(origin='*')
+def view_reminders_sent(trainer_id):
+    connection = create_connection()
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT COUNT(*) AS num_reminders
+        FROM Reminder
+        WHERE TrainerID = %s
+    """, (trainer_id,))
+    reminder_count = cursor.fetchone()
+    close_connection(connection)
+    return jsonify(reminder_count)
+
+
+@app.route('/trainer/<int:trainer_id>/exercises_created', methods=['GET', 'OPTIONS'])
+@cross_origin(origin='*')
+def view_exercises_created(trainer_id):
+    connection = create_connection()
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT COUNT(*) AS num_exercises
+        FROM Exercise
+        WHERE TrainerID = %s
+    """, (trainer_id,))
+    exercise_count = cursor.fetchone()
+    close_connection(connection)
+    return jsonify(exercise_count)
+
+@app.route('/trainer/<int:trainer_id>/meals_created', methods=['GET', 'OPTIONS'])
+@cross_origin(origin='*')
+def view_meals_created(trainer_id):
+    connection = create_connection()
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT COUNT(*) AS num_meals
+        FROM Meal
+        WHERE TrainerID = %s
+    """, (trainer_id,))
+    meal_count = cursor.fetchone()
+    close_connection(connection)
+    return jsonify(meal_count)
+
+
+@app.route('/trainer/<int:trainer_id>/statistics', methods=['GET'])
+def get_statistics(trainer_id):
+    connection = create_connection()
+    cursor = connection.cursor(dictionary=True)
+    
+    cursor.execute("""
+        SELECT COUNT(*) AS num_clients
+        FROM Client c
+        WHERE c.client_id IN (
+            SELECT ClientID FROM FitnessPlan WHERE TrainerID = %s
+        )
+    """, (trainer_id,))
+    num_clients = cursor.fetchone()['num_clients']
+    
+    cursor.execute("""
+        SELECT COUNT(*) AS num_reminders
+        FROM Reminder
+        WHERE TrainerID = %s
+    """, (trainer_id,))
+    num_reminders = cursor.fetchone()['num_reminders']
+    
+    cursor.execute("""
+        SELECT COUNT(*) AS num_exercises
+        FROM Exercise
+        WHERE TrainerID = %s
+    """, (trainer_id,))
+    num_exercises = cursor.fetchone()['num_exercises']
+    
+    cursor.execute("""
+        SELECT COUNT(*) AS num_meals
+        FROM Meal
+        WHERE TrainerID = %s
+    """, (trainer_id,))
+    num_meals = cursor.fetchone()['num_meals']
+    
+    statistics = {
+        'numClients': num_clients,
+        'numReminders': num_reminders,
+        'numExercises': num_exercises,
+        'numMeals': num_meals
+    }
+    
+    close_connection(connection)
+    return jsonify(statistics)
+
+
 @app.after_request
 def apply_cors(response):
     response.headers["Access-Control-Allow-Origin"] = "http://localhost:3000"
