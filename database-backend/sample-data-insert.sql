@@ -26,28 +26,29 @@ VALUES
     ('Megan', 'Walker', 163, 58, 27, 'megan.walker734@example.com', '$2b$12$zagI75m80HyX8Mf1GgbCiOTJW.T7Ud4KeTVRjjw1L/PHhf/YB4bte');
 
 -- Insert Trainers (20 entries)
-INSERT INTO Trainer (FirstName, LastName, Certification, YearsOfExperience, Email, Password)
+INSERT INTO Trainer (FirstName, LastName, Email, Password, Certification)
 VALUES 
-    ('Brian', 'Nelson', 'Certified Personal Trainer', 10, 'brian.nelson123@example.com', '$2b$12$XwpLH1L8dfVmBX7BsCj8E.5zd.jw0C3nKGz3aaA3ah/rji5VMLDo.'),
-    ('Samantha', 'Lopez', 'Yoga Instructor', 8, 'samantha.lopez456@example.com', '$2b$12$e4643i5c1DggFNhWrH.6huOummhv3yMc4A971ofGZmrlYCzL3hFZS'),
-    ('Kevin', 'Hill', 'Strength Coach', 12, 'kevin.hill789@example.com', '$2b$12$SfIqHcHA2HBQYwMR.CnOSOcGXz3aeLBAMlP1q2zSIaGr6EDbGOxw2'),
-    ('Rachel', 'Scott', 'Nutrition Specialist', 9, 'rachel.scott123@example.com', '$2b$12$Wze7lANMtPApxdfyu1NGReluuubHsoPK/MRxN9H..LFTIrpPvcUsK'),
-    ('Andrew', 'Young', 'Certified Personal Trainer', 15, 'andrew.young456@example.com', '$2b$12$m4rP3wI5IxePhr57qGVGMOBvdwfAya4vivxsHQCk87erI/6y8zzEa'),
-    ('Natalie', 'Green', 'Pilates Instructor', 7, 'natalie.green789@example.com', '$2b$12$.bRMfwqghKHzAtQ9JeZdj.Ysoa8sWww4buKOWb5/4eCn97hNnAQr.'),
-    ('Ethan', 'Hall', 'Athletic Trainer', 11, 'ethan.hall123@example.com', '$2b$12$CEcmXuv/1v4bRaSBWRcm3eFbUcF.I4OqrYZYTDDhxWjmNIAsWLX4m'),
-    ('Sophia', 'Adams', 'Zumba Instructor', 5, 'sophia.adams456@example.com', '$2b$12$RISUNiwtpsAvxhC4wlOmA.asDx46ASNW3ozxnfQ5RSFWbMg1NO1Vm'),
-    ('Jacob', 'Baker', 'Certified Strength Coach', 10, 'jacob.baker789@example.com', '$2b$12$bjLe4PgVZCkUDRZntrn4y.9KSeIQHcrKM7L0Mfc.EwL4DLjJ8TSXK'),
-    ('Emma', 'Garcia', 'Yoga Instructor', 6, 'emma.garcia123@example.com', '$2b$12$x5GB1nLNANomMm6Uby9FtOr4OD1qX9eMG/0N4YX60eXelBOOabQuS'),
-    ('Liam', 'Roberts', 'Fitness Coach', 14, 'liam.roberts456@example.com', '$2b$12$uW2VbGZYqT4SRSFc38U/4uNfueoQvAjRLv92vi0yRsWGUg/iwixRi'),
-    ('Olivia', 'Martinez', 'Certified Personal Trainer', 8, 'olivia.martinez789@example.com', '$2b$12$W3g0eQ5eKlW/wKMsVRFAuua1dmMOrJtdIq6EbvTWV6F6/eay1Xiu2'),
-    ('Lucas', 'Phillips', 'CrossFit Coach', 9, 'lucas.phillips123@example.com', '$2b$12$etdMRT1SwRIv/XknHYxxTeCsqkzYkNr/MiO4Jxrpgw55zIDCy3TRK'),
-    ('Mia', 'Evans', 'Group Fitness Instructor', 6, 'mia.evans456@example.com', '$2b$12$5Qz9dEm3zXycFBN5tDW.VuQkY96QwXCI9LNNvFuU0SCUJZOLBzmgG'),
-    ('Alexander', 'Turner', 'Nutritionist', 13, 'alexander.turner789@example.com', '$2b$12$wOxPXYQHdZ6DRBgC8l4jYOeqzErCUxM2I.ijMGn1OzWACRxVxYbQa'),
-    ('Charlotte', 'Perez', 'Pilates Instructor', 7, 'charlotte.perez123@example.com', '$2b$12$chKN/ITwJXOWuNU4/3F03G67KpYyOn6qQ/RMldzoBgFgWhZ7h0rFi'),
-    ('Benjamin', 'Parker', 'Certified Strength Coach', 11, 'benjamin.parker456@example.com', '$2b$12$YoJFnI0GZ2lWbOlkZGB/XO6wvNnksr0XGhsYB1W/Swf0ECNAtHyJi'),
-    ('Amelia', 'Edwards', 'Aerobics Instructor', 6, 'amelia.edwards789@example.com', '$2b$12$7gt3oe.owI9WZKbWhqUpHOZPt7fSlp3Jl7vVD7FSWqri9ZYHFkq9C'),
-    ('Henry', 'James', 'Certified Personal Trainer', 15, 'henry.james123@example.com', '$2b$12$yTKEl0FSV0xDPyL6mVL7EuIIVGUkc2eGUVBX8U40EUEuaTb9AiDj6'),
-    ('Isabella', 'Brown', 'Yoga Instructor', 7, 'isabella.brown456@example.com', '$2b$12$3TtwRD51KRG.XKm/tctJlOhRty9lG69cyQu8wVIpa3eAl5M6wCBhe');
+    ('Brian', 'Nelson', 'brian.nelson123@example.com', '$2b$12$XwpLH1L8dfVmBX7BsCj8E.5zd.jw0C3nKGz3aaA3ah/rji5VMLDo.', 'Certified Personal Trainer'),
+    ('Samantha', 'Lopez', 'samantha.lopez456@example.com', '$2b$12$e4643i5c1DggFNhWrH.6huOummhv3yMc4A971ofGZmrlYCzL3hFZS', 'Yoga Instructor'),
+    ('Kevin', 'Hill', 'kevin.hill789@example.com', '$2b$12$SfIqHcHA2HBQYwMR.CnOSOcGXz3aeLBAMlP1q2zSIaGr6EDbGOxw2', 'Strength Coach'),
+    ('Rachel', 'Scott', 'rachel.scott123@example.com', '$2b$12$Wze7lANMtPApxdfyu1NGReluuubHsoPK/MRxN9H..LFTIrpPvcUsK', 'Nutrition Specialist'),
+    ('Andrew', 'Young', 'andrew.young456@example.com', '$2b$12$m4rP3wI5IxePhr57qGVGMOBvdwfAya4vivxsHQCk87erI/6y8zzEa', 'Certified Personal Trainer'),
+    ('Natalie', 'Green', 'natalie.green789@example.com', '$2b$12$.bRMfwqghKHzAtQ9JeZdj.Ysoa8sWww4buKOWb5/4eCn97hNnAQr.', 'Pilates Instructor'),
+    ('Ethan', 'Hall', 'ethan.hall123@example.com', '$2b$12$CEcmXuv/1v4bRaSBWRcm3eFbUcF.I4OqrYZYTDDhxWjmNIAsWLX4m', 'Athletic Trainer'),
+    ('Sophia', 'Adams', 'sophia.adams456@example.com', '$2b$12$RISUNiwtpsAvxhC4wlOmA.asDx46ASNW3ozxnfQ5RSFWbMg1NO1Vm', 'Zumba Instructor'),
+    ('Jacob', 'Baker', 'jacob.baker789@example.com', '$2b$12$bjLe4PgVZCkUDRZntrn4y.9KSeIQHcrKM7L0Mfc.EwL4DLjJ8TSXK', 'Certified Strength Coach'),
+    ('Emma', 'Garcia', 'emma.garcia123@example.com', '$2b$12$x5GB1nLNANomMm6Uby9FtOr4OD1qX9eMG/0N4YX60eXelBOOabQuS', 'Yoga Instructor'),
+    ('Liam', 'Roberts', 'liam.roberts456@example.com', '$2b$12$uW2VbGZYqT4SRSFc38U/4uNfueoQvAjRLv92vi0yRsWGUg/iwixRi', 'Fitness Coach'),
+    ('Olivia', 'Martinez', 'olivia.martinez789@example.com', '$2b$12$W3g0eQ5eKlW/wKMsVRFAuua1dmMOrJtdIq6EbvTWV6F6/eay1Xiu2', 'Certified Personal Trainer'),
+    ('Lucas', 'Phillips', 'lucas.phillips123@example.com', '$2b$12$etdMRT1SwRIv/XknHYxxTeCsqkzYkNr/MiO4Jxrpgw55zIDCy3TRK', 'CrossFit Coach'),
+    ('Mia', 'Evans', 'mia.evans456@example.com', '$2b$12$5Qz9dEm3zXycFBN5tDW.VuQkY96QwXCI9LNNvFuU0SCUJZOLBzmgG', 'Group Fitness Instructor'),
+    ('Alexander', 'Turner', 'alexander.turner789@example.com', '$2b$12$wOxPXYQHdZ6DRBgC8l4jYOeqzErCUxM2I.ijMGn1OzWACRxVxYbQa', 'Nutritionist'),
+    ('Charlotte', 'Perez', 'charlotte.perez123@example.com', '$2b$12$chKN/ITwJXOWuNU4/3F03G67KpYyOn6qQ/RMldzoBgFgWhZ7h0rFi', 'Pilates Instructor'),
+    ('Benjamin', 'Parker', 'benjamin.parker456@example.com', '$2b$12$YoJFnI0GZ2lWbOlkZGB/XO6wvNnksr0XGhsYB1W/Swf0ECNAtHyJi', 'Certified Strength Coach'),
+    ('Amelia', 'Edwards', 'amelia.edwards789@example.com', '$2b$12$7gt3oe.owI9WZKbWhqUpHOZPt7fSlp3Jl7vVD7FSWqri9ZYHFkq9C', 'Aerobics Instructor'),
+    ('Henry', 'James', 'henry.james123@example.com', '$2b$12$yTKEl0FSV0xDPyL6mVL7EuIIVGUkc2eGUVBX8U40EUEuaTb9AiDj6', 'Certified Personal Trainer'),
+    ('Isabella', 'Brown', 'isabella.brown456@example.com', '$2b$12$3TtwRD51KRG.XKm/tctJlOhRty9lG69cyQu8wVIpa3eAl5M6wCBhe', 'Yoga Instructor');
+
 
 
 -- Insert Fitness Plans (20 entries)
