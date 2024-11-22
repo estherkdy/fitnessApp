@@ -445,10 +445,12 @@ def view_meals_created(trainer_id):
     connection = create_connection()
     cursor = connection.cursor(dictionary=True)
     cursor.execute("""
-        SELECT COUNT(*) AS num_meals
-        FROM Meal
-        WHERE TrainerID = %s
-    """, (trainer_id,))
+    SELECT COUNT(*) AS num_meals
+    FROM Meal m
+    JOIN Diet d ON m.DietID = d.DietID
+    JOIN FitnessPlan fp ON d.PlanID = fp.PlanID
+    WHERE fp.TrainerID = %s
+""", (trainer_id,))
     meal_count = cursor.fetchone()
     close_connection(connection)
     return jsonify(meal_count)
