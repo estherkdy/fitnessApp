@@ -38,6 +38,11 @@ function TrainerHome() {
         setModalContent(null);
     };
 
+    const removeClient = () => {
+        // remove client from trainer in database
+        setModalOpen(false)
+    }
+
     const viewClients = async () => {
         setClientsFetched(true);
         try {
@@ -57,6 +62,7 @@ function TrainerHome() {
                                 <p>Weight: {client.weight} kg</p>
                             </div>
                         ))}
+                        <button className='del-client' onClick={removeClient}>Remove Client</button>
                     </div>
                 ) : (
                     <p>No clients found.</p>
@@ -397,7 +403,7 @@ function TrainerHome() {
         <div className="client-home">
             <div className="button-box">
                 <button className="logout-button" onClick={() => navigate('/')}>Log Out</button>
-                <button className="stats" onClick={() => { console.log('Stats button clicked'); viewStats(); }}>
+                <button className="stats" onClick={viewStats}>
     Your Statistics
 </button>
 

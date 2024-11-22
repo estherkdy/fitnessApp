@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './ClientHome.css';
-import ClientLog from './ClientLog';
 import Modal from '../Modal';
 
 function ClientHome() {
@@ -142,106 +141,6 @@ function ClientHome() {
             console.error('Error fetching fitness plan:', error);
         }
     };
-
-    const openExerciseForm = () => {
-        openModal(
-            <div className="form-section">
-                <h3>Log Exercise</h3>
-                <input
-                    type="text"
-                    name="name"
-                    placeholder="Exercise Name"
-                    value={exerciseData.name}
-                    onChange={handleExerciseChange}
-                />
-                <input
-                    type="number"
-                    name="reps"
-                    placeholder="Reps"
-                    value={exerciseData.reps}
-                    onChange={handleExerciseChange}
-                />
-                <input
-                    type="number"
-                    name="sets"
-                    placeholder="Sets"
-                    value={exerciseData.sets}
-                    onChange={handleExerciseChange}
-                />
-                <input
-                    type="number"
-                    name="duration"
-                    placeholder="Duration (mins)"
-                    value={exerciseData.duration}
-                    onChange={handleExerciseChange}
-                />
-                <input
-                    type="number"
-                    name="calories"
-                    placeholder="Calories Burned"
-                    value={exerciseData.calories}
-                    onChange={handleExerciseChange}
-                />
-                <input
-                    type="date"
-                    name="date"
-                    value={exerciseData.date}
-                    onChange={handleExerciseChange}
-                />
-                <button onClick={addExercise}>Add Exercise</button>
-            </div>
-        )
-    } 
-
-    const openMealForm = () => {
-        openModal(
-            <div className="form-section">
-                <h3>Log Meal</h3>
-                <input
-                    type="text"
-                    name="name"
-                    placeholder="Meal Name"
-                    value={mealData.name}
-                    onChange={handleMealChange}
-                />
-                <input
-                    type="number"
-                    name="calories"
-                    placeholder="Calories"
-                    value={mealData.calories}
-                    onChange={handleMealChange}
-                />
-                <input
-                    type="number"
-                    name="protein"
-                    placeholder="Protein (g)"
-                    value={mealData.protein}
-                    onChange={handleMealChange}
-                />
-                <input
-                    type="number"
-                    name="carbs"
-                    placeholder="Carbs (g)"
-                    value={mealData.carbs}
-                    onChange={handleMealChange}
-                />
-                <input
-                    type="number"
-                    name="fat"
-                    placeholder="Fat (g)"
-                    value={mealData.fat}
-                    onChange={handleMealChange}
-                />
-                <input
-                    type="date"
-                    name="date"
-                    value={mealData.date}
-                    onChange={handleMealChange}
-                />
-                <button onClick={addMeal}>Add Meal</button>
-            </div>
-        )
-    }
     
     const updateExerciseStatus = async (exerciseId, completed) => {
         try {
@@ -365,20 +264,20 @@ function ClientHome() {
     
 
     const handleStats = async () => {
-        openModal(
-            <div>
-                <label>Select a day</label>
-                <input
-                    type="date"
-                    name="date"
-                    value={statDate}
-                    onChange={handleStatCalc}
-                />
-                <p>Calories consumed: {caloriesConsumed}</p>
-                <p>Calories burned: {caloriesBurned}</p>
-                <p>Net Calorie Count: {netCalories}</p>
-            </div>
-        )
+        // openModal(
+        //     <div>
+        //         <label>Select a day</label>
+        //         <input
+        //             type="date"
+        //             name="date"
+        //             value={statDate}
+        //             onChange={handleStatCalc}
+        //         />
+        //         <p>Calories consumed: {caloriesConsumed}</p>
+        //         <p>Calories burned: {caloriesBurned}</p>
+        //         <p>Net Calorie Count: {netCalories}</p>
+        //     </div>
+        // )
     }
 
     const handleStatCalc = async () => {
@@ -389,7 +288,7 @@ function ClientHome() {
         <div className='client-home'>
             <div className="button-box">
                 <button className="logout-button" onClick={() => navigate('/')}>Log Out</button>
-                <button className='stats' onClick={handleStats}>Your Statistics</button>
+                <button className='stats' onClick={() => navigate('/clientstats')}>Your Statistics</button>
                 <button className="update-button" onClick={() => navigate('/clientupdate')}>View Profile</button>
             </div>
             <div className='box'>
@@ -403,10 +302,10 @@ function ClientHome() {
                 <button className='button' onClick={viewFitnessPlan}>View Fitness Plan</button>
 
                 {/* Exercise Section */}
-                <button className='button' onClick={openExerciseForm}>Log Exercise</button>
+                <button className='button' onClick={() => navigate('/logexercise')}>Log Exercise</button>
 
                 {/* Meal Section */}
-                <button className='button' onClick={openMealForm}>Log Meal</button>
+                <button className='button' onClick={() => navigate('/logmeal')}>Log Meal</button>
 
                 {/* Reminders */}
                 <button className='button' onClick={checkReminders}>Check Reminders</button>

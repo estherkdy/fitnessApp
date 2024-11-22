@@ -12,6 +12,9 @@ import './App.css';
 import ClientUpdate from './pages/ClientUpdate';
 import TrainerUpdate from './pages/TrainerUpdate';
 import AdminHome from './pages/AdminHome';
+import LogExercise from './pages/LogExercise';
+import LogMeal from './pages/LogMeal';
+import ClientStats from './pages/ClientStats';
 
 function App() {
   return (
@@ -27,6 +30,9 @@ function App() {
           <Route path="/trainerhome" element={<TrainerHome />} />
           <Route path="/trainerupdate" element={<TrainerUpdate />} />
           <Route path="/clientupdate" element={<ClientUpdate />} />
+          <Route path="/logexercise" element={<LogExercise />} />
+          <Route path="/logmeal" element={<LogMeal />} />
+          <Route path="/clientstats" element={<ClientStats />} />
         </Routes>
     </Router>
   );
