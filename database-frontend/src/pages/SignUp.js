@@ -19,39 +19,16 @@ function SignUp() {
     const [emailError, setEmailError] = useState(''); 
     const [specialty, setSpecialty] = useState(null);
 
-    const handleEmail = (event) => {
-        setEmail(event.target.value);
-    };
-    const handlePassword = (event) => {
-        setPassword(event.target.value);
-    };
-    const handleConfirmPassword = (event) => {
-        setConfirmPassword(event.target.value);
-    };
-    const handleUserType = (event) => {
-        setUserType(event.target.value);
-    };
-    const handleFirstName = (event) => {
-        setFirstName(event.target.value);
-    };
-    const handleLastName = (event) => {
-        setLastName(event.target.value);
-    };
-    const handleSpecialty = (event) => {
-        setSpecialty(event.target.value);
-    };
-    const handleHeight = (event) => {
-        const value = Math.max(0, event.target.value);  
-        setHeight(value);
-    };
-    const handleWeight = (event) => {
-        const value = Math.max(0, event.target.value);  
-        setWeight(value);
-    };
-    const handleAge = (event) => {
-        const value = Math.max(0, event.target.value);  
-        setAge(value);
-    };
+    const handleEmail = (event) => setEmail(event.target.value);
+    const handlePassword = (event) => setPassword(event.target.value);
+    const handleConfirmPassword = (event) => setConfirmPassword(event.target.value);
+    const handleUserType = (event) => setUserType(event.target.value);
+    const handleFirstName = (event) => setFirstName(event.target.value);
+    const handleLastName = (event) => setLastName(event.target.value);
+    const handleSpecialty = (event) => setSpecialty(event.target.value);
+    const handleHeight = (event) => setHeight(Math.max(0, event.target.value));
+    const handleWeight = (event) => setWeight(Math.max(0, event.target.value));
+    const handleAge = (event) => setAge(Math.max(0, event.target.value));
 
     const handleSignUp = async () => {
         console.log('Sign up button clicked');
@@ -70,13 +47,13 @@ function SignUp() {
             setIsError(false);
     
             const userData = {
-                firstName,
-                lastName,
                 email,
                 password,
                 user_type: userType,
                 ...(userType === 'client' && { height, weight, age }),
                 ...(userType === 'trainer' && { specialty }),
+                ...(userType === 'admin'), // Combine for admin
+                ...((userType === 'client' || userType === 'trainer' || (userType === 'admin')) && { first_name: firstName, last_name: lastName }), // Separate for others
             };
     
             try {
@@ -85,8 +62,10 @@ function SignUp() {
                 console.log('Response:', response.data);
                 if (userType === 'client') {
                     navigate('/clienthome');
-                } else {
+                } else if (userType === 'trainer') {
                     navigate('/trainerhome');
+                } else {
+                    navigate('/adminhome');
                 }
             } catch (error) {
                 console.error("Sign-up error: ", error);
@@ -98,7 +77,14 @@ function SignUp() {
         }
     };
 
-    const disabled = !email || !password || !confirmPassword || !userType || (userType === 'client' && (!height || !weight || !age)) || !firstName || !lastName || (userType === 'trainer' && (!specialty));
+    const disabled =
+        !email || 
+        !password || 
+        !confirmPassword || 
+        !userType || 
+        (userType === 'client' && (!height || !weight || !age)) || 
+        (userType === 'trainer' && !specialty) || 
+        (userType === 'admin' && (!firstName || !lastName)); // Ensure firstName and lastName are provided for admin
 
     return (
         <div className='center-container'>
@@ -165,6 +151,7 @@ function SignUp() {
                     <option value="">Select your user type</option>
                     <option value="client">Client</option>
                     <option value="trainer">Trainer</option>
+                    <option value="admin">Admin</option>
                 </select>
             </div>
             {userType === 'client' && (

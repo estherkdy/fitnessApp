@@ -25,31 +25,32 @@ VALUES
     ('Paul', 'Lee', 177, 82, 33, 'paul.lee934@example.com', '$2b$12$uULa28EYuBedfkcCcMpCdO9wLVAq.i/eBjrykmcV//bVL1BHvOxRS'),
     ('Megan', 'Walker', 163, 58, 27, 'megan.walker734@example.com', '$2b$12$zagI75m80HyX8Mf1GgbCiOTJW.T7Ud4KeTVRjjw1L/PHhf/YB4bte');
 
- 
 -- Insert Trainers (20 entries)
-INSERT INTO Trainer (FirstName, LastName, Email, Password, Specialty)
+INSERT INTO Trainer (FirstName, LastName, Email, Password, Speciality)
 VALUES 
-    ('Brian', 'Nelson', 'brian.nelson123@example.com', '$2b$12$XwpLH1L8dfVmBX7BsCj8E.5zd.jw0C3nKGz3aaA3ah/rji5VMLDo.', 'Strength Training'),
-    ('Samantha', 'Lopez', 'samantha.lopez456@example.com', '$2b$12$e4643i5c1DggFNhWrH.6huOummhv3yMc4A971ofGZmrlYCzL3hFZS', 'Dietician'),
-    ('Kevin', 'Hill', 'kevin.hill789@example.com', '$2b$12$SfIqHcHA2HBQYwMR.CnOSOcGXz3aeLBAMlP1q2zSIaGr6EDbGOxw2', 'Cardiovascular Endurance'),
-    ('Rachel', 'Scott', 'rachel.scott123@example.com', '$2b$12$Wze7lANMtPApxdfyu1NGReluuubHsoPK/MRxN9H..LFTIrpPvcUsK', 'Strength Training'),
-    ('Andrew', 'Young', 'andrew.young456@example.com', '$2b$12$m4rP3wI5IxePhr57qGVGMOBvdwfAya4vivxsHQCk87erI/6y8zzEa', 'Muscular Endurance'),
-    ('Natalie', 'Green', 'natalie.green789@example.com', '$2b$12$.bRMfwqghKHzAtQ9JeZdj.Ysoa8sWww4buKOWb5/4eCn97hNnAQr.', 'Dietician'),
-    ('Ethan', 'Hall', 'ethan.hall123@example.com', '$2b$12$CEcmXuv/1v4bRaSBWRcm3eFbUcF.I4OqrYZYTDDhxWjmNIAsWLX4m', 'Life Coach'),
+    ('Brian', 'Nelson', 'brian.nelson123@example.com', '$2b$12$XwpLH1L8dfVmBX7BsCj8E.5zd.jw0C3nKGz3aaA3ah/rji5VMLDo.', 'Certified Personal Trainer'),
+    ('Samantha', 'Lopez', 'samantha.lopez456@example.com', '$2b$12$e4643i5c1DggFNhWrH.6huOummhv3yMc4A971ofGZmrlYCzL3hFZS', 'Yoga Instructor'),
+    ('Kevin', 'Hill', 'kevin.hill789@example.com', '$2b$12$SfIqHcHA2HBQYwMR.CnOSOcGXz3aeLBAMlP1q2zSIaGr6EDbGOxw2', 'Strength Coach'),
+    ('Rachel', 'Scott', 'rachel.scott123@example.com', '$2b$12$Wze7lANMtPApxdfyu1NGReluuubHsoPK/MRxN9H..LFTIrpPvcUsK', 'Nutrition Specialist'),
+    ('Andrew', 'Young', 'andrew.young456@example.com', '$2b$12$m4rP3wI5IxePhr57qGVGMOBvdwfAya4vivxsHQCk87erI/6y8zzEa', 'Certified Personal Trainer'),
+    ('Natalie', 'Green', 'natalie.green789@example.com', '$2b$12$.bRMfwqghKHzAtQ9JeZdj.Ysoa8sWww4buKOWb5/4eCn97hNnAQr.', 'Pilates Instructor'),
+    ('Ethan', 'Hall', 'ethan.hall123@example.com', '$2b$12$CEcmXuv/1v4bRaSBWRcm3eFbUcF.I4OqrYZYTDDhxWjmNIAsWLX4m', 'Athletic Trainer'),
     ('Sophia', 'Adams', 'sophia.adams456@example.com', '$2b$12$RISUNiwtpsAvxhC4wlOmA.asDx46ASNW3ozxnfQ5RSFWbMg1NO1Vm', 'Zumba Instructor'),
-    ('Jacob', 'Baker', 'jacob.baker789@example.com', '$2b$12$bjLe4PgVZCkUDRZntrn4y.9KSeIQHcrKM7L0Mfc.EwL4DLjJ8TSXK', 'Cardiovascular Endurance'),
-    ('Emma', 'Garcia', 'emma.garcia123@example.com', '$2b$12$x5GB1nLNANomMm6Uby9FtOr4OD1qX9eMG/0N4YX60eXelBOOabQuS', 'Strength Training'),
-    ('Liam', 'Roberts', 'liam.roberts456@example.com', '$2b$12$uW2VbGZYqT4SRSFc38U/4uNfueoQvAjRLv92vi0yRsWGUg/iwixRi', 'Life Coach'),
-    ('Olivia', 'Martinez', 'olivia.martinez789@example.com', '$2b$12$W3g0eQ5eKlW/wKMsVRFAuua1dmMOrJtdIq6EbvTWV6F6/eay1Xiu2', 'Strength Training'),
-    ('Lucas', 'Phillips', 'lucas.phillips123@example.com', '$2b$12$etdMRT1SwRIv/XknHYxxTeCsqkzYkNr/MiO4Jxrpgw55zIDCy3TRK', 'Dietician'),
-    ('Mia', 'Evans', 'mia.evans456@example.com', '$2b$12$5Qz9dEm3zXycFBN5tDW.VuQkY96QwXCI9LNNvFuU0SCUJZOLBzmgG', 'Life Coach'),
-    ('Alexander', 'Turner', 'alexander.turner789@example.com', '$2b$12$wOxPXYQHdZ6DRBgC8l4jYOeqzErCUxM2I.ijMGn1OzWACRxVxYbQa', 'Cardiovascular Endurance'),
-    ('Charlotte', 'Perez', 'charlotte.perez123@example.com', '$2b$12$chKN/ITwJXOWuNU4/3F03G67KpYyOn6qQ/RMldzoBgFgWhZ7h0rFi', 'Muscular Endurance'),
-    ('Benjamin', 'Parker', 'benjamin.parker456@example.com', '$2b$12$YoJFnI0GZ2lWbOlkZGB/XO6wvNnksr0XGhsYB1W/Swf0ECNAtHyJi', 'Life Coach'),
-    ('Amelia', 'Edwards', 'amelia.edwards789@example.com', '$2b$12$7gt3oe.owI9WZKbWhqUpHOZPt7fSlp3Jl7vVD7FSWqri9ZYHFkq9C', 'Life Coach'),
-    ('Henry', 'James', 'henry.james123@example.com', '$2b$12$yTKEl0FSV0xDPyL6mVL7EuIIVGUkc2eGUVBX8U40EUEuaTb9AiDj6', 'Strength Training'),
-    ('Isabella', 'Brown', 'isabella.brown456@example.com', '$2b$12$3TtwRD51KRG.XKm/tctJlOhRty9lG69cyQu8wVIpa3eAl5M6wCBhe', 'Zumba Instructor');
- 
+    ('Jacob', 'Baker', 'jacob.baker789@example.com', '$2b$12$bjLe4PgVZCkUDRZntrn4y.9KSeIQHcrKM7L0Mfc.EwL4DLjJ8TSXK', 'Certified Strength Coach'),
+    ('Emma', 'Garcia', 'emma.garcia123@example.com', '$2b$12$x5GB1nLNANomMm6Uby9FtOr4OD1qX9eMG/0N4YX60eXelBOOabQuS', 'Yoga Instructor'),
+    ('Liam', 'Roberts', 'liam.roberts456@example.com', '$2b$12$uW2VbGZYqT4SRSFc38U/4uNfueoQvAjRLv92vi0yRsWGUg/iwixRi', 'Fitness Coach'),
+    ('Olivia', 'Martinez', 'olivia.martinez789@example.com', '$2b$12$W3g0eQ5eKlW/wKMsVRFAuua1dmMOrJtdIq6EbvTWV6F6/eay1Xiu2', 'Certified Personal Trainer'),
+    ('Lucas', 'Phillips', 'lucas.phillips123@example.com', '$2b$12$etdMRT1SwRIv/XknHYxxTeCsqkzYkNr/MiO4Jxrpgw55zIDCy3TRK', 'CrossFit Coach'),
+    ('Mia', 'Evans', 'mia.evans456@example.com', '$2b$12$5Qz9dEm3zXycFBN5tDW.VuQkY96QwXCI9LNNvFuU0SCUJZOLBzmgG', 'Group Fitness Instructor'),
+    ('Alexander', 'Turner', 'alexander.turner789@example.com', '$2b$12$wOxPXYQHdZ6DRBgC8l4jYOeqzErCUxM2I.ijMGn1OzWACRxVxYbQa', 'Nutritionist'),
+    ('Charlotte', 'Perez', 'charlotte.perez123@example.com', '$2b$12$chKN/ITwJXOWuNU4/3F03G67KpYyOn6qQ/RMldzoBgFgWhZ7h0rFi', 'Pilates Instructor'),
+    ('Benjamin', 'Parker', 'benjamin.parker456@example.com', '$2b$12$YoJFnI0GZ2lWbOlkZGB/XO6wvNnksr0XGhsYB1W/Swf0ECNAtHyJi', 'Certified Strength Coach'),
+    ('Amelia', 'Edwards', 'amelia.edwards789@example.com', '$2b$12$7gt3oe.owI9WZKbWhqUpHOZPt7fSlp3Jl7vVD7FSWqri9ZYHFkq9C', 'Aerobics Instructor'),
+    ('Henry', 'James', 'henry.james123@example.com', '$2b$12$yTKEl0FSV0xDPyL6mVL7EuIIVGUkc2eGUVBX8U40EUEuaTb9AiDj6', 'Certified Personal Trainer'),
+    ('Isabella', 'Brown', 'isabella.brown456@example.com', '$2b$12$3TtwRD51KRG.XKm/tctJlOhRty9lG69cyQu8wVIpa3eAl5M6wCBhe', 'Yoga Instructor');
+
+
+
 -- Insert Fitness Plans (20 entries)
 INSERT INTO FitnessPlan (ClientID, TrainerID, StartDate, EndDate, Description)
 VALUES 

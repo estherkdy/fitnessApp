@@ -8,7 +8,6 @@ function ClientHome() {
     const navigate = useNavigate();
     const [trainerInfo, setTrainerInfo] = useState(null);
     const [fitnessPlan, setFitnessPlan] = useState([]);
-    const [trainers, setTrainers] = useState([]);
     const [reminders, setReminders] = useState([]);
 
     const [trainerFetched, setTrainerFetched] = useState(false);
@@ -207,38 +206,12 @@ function ClientHome() {
     };
 
     const handleSpecialty = async (event) => {
+        // open modal with list of trainers with selected specialty from search trainers
         const selectedSpecialty = event.target.value;
         setSpecialty(selectedSpecialty);
-    
-        if (selectedSpecialty) {
-            try { 
-                const response = await axios.get('/search_trainers', {
-                    params: { specialty: selectedSpecialty },
-                }); 
-                setTrainers(response.data);
-                 
-                openModal(
-                    <div>
-                        <h2>Trainers with Specialty: {selectedSpecialty}</h2>
-                        {response.data.length > 0 ? (
-                            <ul>
-                                {response.data.map((trainer) => (
-                                    <li key={trainer.TrainerID}>
-                                        <p><strong>{trainer.FirstName} {trainer.LastName}</strong></p>
-                                        <p>Email: {trainer.Email}</p>
-                                        <p>Specialty: {trainer.Specialty}</p>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p>No trainers found for this specialty.</p>
-                        )}
-                    </div>
-                );
-            } catch (error) {
-                console.error("Error fetching trainers:", error);
-            }
-        }
+        openModal(
+            // show list of trainers with specialty
+        )
     }
 
     const searchTrainers = () => {
