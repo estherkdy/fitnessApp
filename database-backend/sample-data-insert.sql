@@ -26,7 +26,7 @@ VALUES
     ('Megan', 'Walker', 163, 58, 27, 'megan.walker734@example.com', '$2b$12$zagI75m80HyX8Mf1GgbCiOTJW.T7Ud4KeTVRjjw1L/PHhf/YB4bte');
 
 -- Insert Trainers (20 entries)
-INSERT INTO Trainer (FirstName, LastName, Email, Password, Certification)
+INSERT INTO Trainer (FirstName, LastName, Email, Password, Speciality)
 VALUES 
     ('Brian', 'Nelson', 'brian.nelson123@example.com', '$2b$12$XwpLH1L8dfVmBX7BsCj8E.5zd.jw0C3nKGz3aaA3ah/rji5VMLDo.', 'Certified Personal Trainer'),
     ('Samantha', 'Lopez', 'samantha.lopez456@example.com', '$2b$12$e4643i5c1DggFNhWrH.6huOummhv3yMc4A971ofGZmrlYCzL3hFZS', 'Yoga Instructor'),
