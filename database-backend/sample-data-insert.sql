@@ -1,52 +1,53 @@
 USE calorie_tracker;
 
+ 
 -- Insert Clients (20 entries)
 INSERT INTO Client (FirstName, LastName, height, weight, age, Email, Password)
 VALUES 
-    ('John', 'Doe', 180, 75, 30, 'john.doe234@example.com', SHA2('password123', 256)),
-    ('Jane', 'Smith', 165, 60, 25, 'jane.smith897@example.com', SHA2('securepass', 256)),
-    ('Michael', 'Brown', 175, 85, 35, 'michael.brown564@example.com', SHA2('passmike', 256)),
-    ('Sarah', 'Davis', 160, 55, 28, 'sarah.davis324@example.com', SHA2('sarahsecure', 256)),
-    ('David', 'Miller', 185, 90, 32, 'david.miller890@example.com', SHA2('davidstrong', 256)),
-    ('Linda', 'Wilson', 155, 50, 26, 'linda.wilson672@example.com', SHA2('lindapass', 256)),
-    ('James', 'Taylor', 170, 72, 34, 'james.taylor439@example.com', SHA2('jamestay', 256)),
-    ('Barbara', 'Anderson', 162, 58, 31, 'barbara.anderson125@example.com', SHA2('barbie', 256)),
-    ('Robert', 'Thomas', 178, 80, 29, 'robert.thomas777@example.com', SHA2('robthom', 256)),
-    ('Mary', 'Jackson', 168, 65, 27, 'mary.jackson902@example.com', SHA2('maryj', 256)),
-    ('William', 'White', 180, 75, 33, 'william.white314@example.com', SHA2('willwhite', 256)),
-    ('Patricia', 'Harris', 165, 59, 30, 'patricia.harris541@example.com', SHA2('patpass', 256)),
-    ('Joseph', 'Martin', 172, 82, 36, 'joseph.martin103@example.com', SHA2('joemart', 256)),
-    ('Nancy', 'Thompson', 160, 53, 24, 'nancy.thompson873@example.com', SHA2('nancyt', 256)),
-    ('Thomas', 'Garcia', 180, 78, 35, 'thomas.garcia428@example.com', SHA2('tomgar', 256)),
-    ('Karen', 'Martinez', 167, 62, 32, 'karen.martinez290@example.com', SHA2('karenm', 256)),
-    ('Christopher', 'Rodriguez', 175, 79, 28, 'chris.rodriguez765@example.com', SHA2('chrisr', 256)),
-    ('Jessica', 'Lopez', 160, 56, 26, 'jessica.lopez983@example.com', SHA2('jessl', 256)),
-    ('Daniel', 'Gonzales', 182, 85, 34, 'daniel.gonzales456@example.com', SHA2('dangon', 256)),
-    ('Ashley', 'Clark', 158, 54, 30, 'ashley.clark672@example.com', SHA2('ashc', 256));
+    ('John', 'Doe', 180, 75, 30, 'john.doe234@example.com', '$2b$12$Afb5K7HlsdowYyYF6QNgsOlaLogQdt1AVwzPXprfn/nqiNPYjQi5i'),
+    ('Jane', 'Smith', 165, 60, 25, 'jane.smith897@example.com', '$2b$12$FULIMJd.XqXubYm3XuWkpeTlpZt3bx8ttE8R8Lx7y57UnxuumJ5Iu'),
+    ('Michael', 'Brown', 175, 85, 35, 'michael.brown564@example.com', '$2b$12$0ob8BNIpRyhntNSKE6mekuKqyxcfjb4jmFkTy/DK73WdEozPPRJp2'),
+    ('Sarah', 'Davis', 160, 55, 28, 'sarah.davis324@example.com', '$2b$12$FnErolIQGtMjoFsUnYG41eyUGw8ELC6G8N97tEhs2wMO.UjmXfgfO'),
+    ('David', 'Miller', 185, 90, 32, 'david.miller890@example.com', '$2b$12$7oZWuOhu4Ki.Cl3YyKtaJ.JsiOBRyUe0t.GDCfY1oha0UhOq1eyoW'),
+    ('Linda', 'Wilson', 155, 50, 26, 'linda.wilson672@example.com', '$2b$12$gefILlgBhxGS/kykFwd1cOR0NL4EMW0awIqH8fizg.sKhy4DB5Xmy'),
+    ('James', 'Taylor', 170, 72, 34, 'james.taylor439@example.com', '$2b$12$yOp9CddgvbK4wMbIEQ.BrOCH97fMmPx2tjjKUH0fWANZXXkR0eSnO'),
+    ('Barbara', 'Anderson', 162, 58, 31, 'barbara.anderson125@example.com', '$2b$12$6Fa0MbZlWBdVZ8Ihu46tEeoX4F7k4MQyclcCSIjEUKYQ8LVQUUMu6'),
+    ('Robert', 'Thomas', 178, 80, 29, 'robert.thomas777@example.com', '$2b$12$wTF4xiTDDijFWQQnGWKlEOCnQZNcQZ50qL9s6jThYYth/deU/8bNa'),
+    ('Mary', 'Jackson', 168, 65, 27, 'mary.jackson902@example.com', '$2b$12$AyK1Tf7EAzYKPd9DFULvJeQ2dZOIY1ve9CA2a9SXhlz9jShHvxBKW'),
+    ('William', 'White', 180, 75, 33, 'william.white314@example.com', '$2b$12$Z1/3KKEcyLM3GILixquI0ez1RWvMGZqDQ5ThvyOnTTVvlHo0oIdMi'),
+    ('Patricia', 'Harris', 165, 59, 30, 'patricia.harris541@example.com', '$2b$12$z11TuCKc7fPfpAPsQ9ageeG3zFsmqwQ7M.BUmETRQZvTxz97ICWQe'),
+    ('Joseph', 'Martin', 172, 82, 36, 'joseph.martin103@example.com', '$2b$12$4AqK9xrdXJANl71KX7NO1eklwu9Caq59oV9PwTFzcsPwAuI36S/pO'),
+    ('Nancy', 'Thompson', 160, 53, 24, 'nancy.thompson873@example.com', '$2b$12$ZAL1QRwUHYBxDysPMDRoAOvDkWTS8mZjBKCMsZqIjRPkHsbaUa6cG'),
+    ('Charles', 'Robinson', 176, 78, 28, 'charles.robinson217@example.com', '$2b$12$/8dpqD1wbTk7t3m0l7OArOPcirRqmkWvL/gKF7B.7YmPnV7jIzke.'),
+    ('Laura', 'Clark', 167, 62, 30, 'laura.clark541@example.com', '$2b$12$ZBc6K9n./TQypJdcutNyc.0/sdrkpAfzn2NFeXQYoTFbCQEn/kOiq'),
+    ('Daniel', 'Rodriguez', 182, 85, 35, 'daniel.rodriguez389@example.com', '$2b$12$SA.6Ad.SdkkpNbSTy5n4auWOGuAGCQVllasH7waOaEsS3rYLVJnyW'),
+    ('Emily', 'Lewis', 162, 55, 26, 'emily.lewis478@example.com', '$2b$12$kAqn.UdN/guL7LQ/42LPKOOBlMNpIYn5LfHMMIi0uQz10a.tEvgka'),
+    ('Paul', 'Lee', 177, 82, 33, 'paul.lee934@example.com', '$2b$12$uULa28EYuBedfkcCcMpCdO9wLVAq.i/eBjrykmcV//bVL1BHvOxRS'),
+    ('Megan', 'Walker', 163, 58, 27, 'megan.walker734@example.com', '$2b$12$zagI75m80HyX8Mf1GgbCiOTJW.T7Ud4KeTVRjjw1L/PHhf/YB4bte');
 
 -- Insert Trainers (20 entries)
-INSERT INTO Trainer (FirstName, LastName, Specialty, Email, Password)
+INSERT INTO Trainer (FirstName, LastName, Certification, YearsOfExperience, Email, Password)
 VALUES 
-    ('Alice', 'Johnson', 'Strength Training', 'alice.johnson321@example.com', SHA2('trainerpass1', 256)),
-    ('Bob', 'Williams', 'Cardio Specialist', 'bob.williams743@example.com', SHA2('trainerpass2', 256)),
-    ('Charlie', 'Brown', 'Yoga', 'charlie.brown218@example.com', SHA2('trainerpass3', 256)),
-    ('Diana', 'King', 'Weight Loss', 'diana.king678@example.com', SHA2('trainerpass4', 256)),
-    ('Edward', 'Wright', 'Endurance', 'edward.wright569@example.com', SHA2('trainerpass5', 256)),
-    ('Fiona', 'Green', 'HIIT', 'fiona.green192@example.com', SHA2('trainerpass6', 256)),
-    ('George', 'Hall', 'Pilates', 'george.hall376@example.com', SHA2('trainerpass7', 256)),
-    ('Hannah', 'Lee', 'Strength Training', 'hannah.lee845@example.com', SHA2('trainerpass8', 256)),
-    ('Ian', 'Young', 'Functional Fitness', 'ian.young290@example.com', SHA2('trainerpass9', 256)),
-    ('Jill', 'Allen', 'CrossFit', 'jill.allen497@example.com', SHA2('trainerpass10', 256)),
-    ('Kevin', 'Scott', 'Strength Training', 'kevin.scott512@example.com', SHA2('trainerpass11', 256)),
-    ('Laura', 'Adams', 'Cardio Specialist', 'laura.adams807@example.com', SHA2('trainerpass12', 256)),
-    ('Mike', 'Baker', 'Weight Loss', 'mike.baker346@example.com', SHA2('trainerpass13', 256)),
-    ('Nina', 'Carter', 'Yoga', 'nina.carter562@example.com', SHA2('trainerpass14', 256)),
-    ('Oscar', 'Collins', 'Endurance', 'oscar.collins135@example.com', SHA2('trainerpass15', 256)),
-    ('Paula', 'Bell', 'HIIT', 'paula.bell389@example.com', SHA2('trainerpass16', 256)),
-    ('Quentin', 'Hill', 'Pilates', 'quentin.hill765@example.com', SHA2('trainerpass17', 256)),
-    ('Rachel', 'Moore', 'Functional Fitness', 'rachel.moore891@example.com', SHA2('trainerpass18', 256)),
-    ('Steve', 'Ward', 'CrossFit', 'steve.ward492@example.com', SHA2('trainerpass19', 256)),
-    ('Tina', 'Brooks', 'Strength Training', 'tina.brooks219@example.com', SHA2('trainerpass20', 256));
+    ('Brian', 'Nelson', 'Certified Personal Trainer', 10, 'brian.nelson123@example.com', '$2b$12$XwpLH1L8dfVmBX7BsCj8E.5zd.jw0C3nKGz3aaA3ah/rji5VMLDo.'),
+    ('Samantha', 'Lopez', 'Yoga Instructor', 8, 'samantha.lopez456@example.com', '$2b$12$e4643i5c1DggFNhWrH.6huOummhv3yMc4A971ofGZmrlYCzL3hFZS'),
+    ('Kevin', 'Hill', 'Strength Coach', 12, 'kevin.hill789@example.com', '$2b$12$SfIqHcHA2HBQYwMR.CnOSOcGXz3aeLBAMlP1q2zSIaGr6EDbGOxw2'),
+    ('Rachel', 'Scott', 'Nutrition Specialist', 9, 'rachel.scott123@example.com', '$2b$12$Wze7lANMtPApxdfyu1NGReluuubHsoPK/MRxN9H..LFTIrpPvcUsK'),
+    ('Andrew', 'Young', 'Certified Personal Trainer', 15, 'andrew.young456@example.com', '$2b$12$m4rP3wI5IxePhr57qGVGMOBvdwfAya4vivxsHQCk87erI/6y8zzEa'),
+    ('Natalie', 'Green', 'Pilates Instructor', 7, 'natalie.green789@example.com', '$2b$12$.bRMfwqghKHzAtQ9JeZdj.Ysoa8sWww4buKOWb5/4eCn97hNnAQr.'),
+    ('Ethan', 'Hall', 'Athletic Trainer', 11, 'ethan.hall123@example.com', '$2b$12$CEcmXuv/1v4bRaSBWRcm3eFbUcF.I4OqrYZYTDDhxWjmNIAsWLX4m'),
+    ('Sophia', 'Adams', 'Zumba Instructor', 5, 'sophia.adams456@example.com', '$2b$12$RISUNiwtpsAvxhC4wlOmA.asDx46ASNW3ozxnfQ5RSFWbMg1NO1Vm'),
+    ('Jacob', 'Baker', 'Certified Strength Coach', 10, 'jacob.baker789@example.com', '$2b$12$bjLe4PgVZCkUDRZntrn4y.9KSeIQHcrKM7L0Mfc.EwL4DLjJ8TSXK'),
+    ('Emma', 'Garcia', 'Yoga Instructor', 6, 'emma.garcia123@example.com', '$2b$12$x5GB1nLNANomMm6Uby9FtOr4OD1qX9eMG/0N4YX60eXelBOOabQuS'),
+    ('Liam', 'Roberts', 'Fitness Coach', 14, 'liam.roberts456@example.com', '$2b$12$uW2VbGZYqT4SRSFc38U/4uNfueoQvAjRLv92vi0yRsWGUg/iwixRi'),
+    ('Olivia', 'Martinez', 'Certified Personal Trainer', 8, 'olivia.martinez789@example.com', '$2b$12$W3g0eQ5eKlW/wKMsVRFAuua1dmMOrJtdIq6EbvTWV6F6/eay1Xiu2'),
+    ('Lucas', 'Phillips', 'CrossFit Coach', 9, 'lucas.phillips123@example.com', '$2b$12$etdMRT1SwRIv/XknHYxxTeCsqkzYkNr/MiO4Jxrpgw55zIDCy3TRK'),
+    ('Mia', 'Evans', 'Group Fitness Instructor', 6, 'mia.evans456@example.com', '$2b$12$5Qz9dEm3zXycFBN5tDW.VuQkY96QwXCI9LNNvFuU0SCUJZOLBzmgG'),
+    ('Alexander', 'Turner', 'Nutritionist', 13, 'alexander.turner789@example.com', '$2b$12$wOxPXYQHdZ6DRBgC8l4jYOeqzErCUxM2I.ijMGn1OzWACRxVxYbQa'),
+    ('Charlotte', 'Perez', 'Pilates Instructor', 7, 'charlotte.perez123@example.com', '$2b$12$chKN/ITwJXOWuNU4/3F03G67KpYyOn6qQ/RMldzoBgFgWhZ7h0rFi'),
+    ('Benjamin', 'Parker', 'Certified Strength Coach', 11, 'benjamin.parker456@example.com', '$2b$12$YoJFnI0GZ2lWbOlkZGB/XO6wvNnksr0XGhsYB1W/Swf0ECNAtHyJi'),
+    ('Amelia', 'Edwards', 'Aerobics Instructor', 6, 'amelia.edwards789@example.com', '$2b$12$7gt3oe.owI9WZKbWhqUpHOZPt7fSlp3Jl7vVD7FSWqri9ZYHFkq9C'),
+    ('Henry', 'James', 'Certified Personal Trainer', 15, 'henry.james123@example.com', '$2b$12$yTKEl0FSV0xDPyL6mVL7EuIIVGUkc2eGUVBX8U40EUEuaTb9AiDj6'),
+    ('Isabella', 'Brown', 'Yoga Instructor', 7, 'isabella.brown456@example.com', '$2b$12$3TtwRD51KRG.XKm/tctJlOhRty9lG69cyQu8wVIpa3eAl5M6wCBhe');
 
 
 -- Insert Fitness Plans (20 entries)
