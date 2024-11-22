@@ -42,6 +42,8 @@ def login():
         cursor.execute("SELECT * FROM Client WHERE Email = %s", (email,))
     elif user_type == 'trainer':
         cursor.execute("SELECT * FROM Trainer WHERE Email = %s", (email,))
+    elif user_type == 'admin':
+        cursor.execute("SELECT * FROM Admin WHERE Email = %s", (email,))
     else:
         return jsonify({"error": "Invalid user type"}), 400
 
@@ -53,6 +55,9 @@ def login():
             return jsonify({"message": "Login successful", "user_data": result, "client_id": result["client_id"]})
         elif user_type == 'trainer':
             return jsonify({"message": "Login successful", "user_data": result, "trainer_id": result["TrainerID"]})
+        elif user_type == 'admin':
+            return jsonify({"message": "Login successful", "user_data": result, "admin_id": result["id"]})
+    
     else:
         return jsonify({"message": "Invalid credentials"}), 401
 
@@ -315,8 +320,8 @@ def signup():
     user_type = data.get("user_type")
     email = data.get("email")
     password = data.get("password").encode('utf-8')  # Encode the password
-    first_name = data.get("firstName")
-    last_name = data.get("lastName")
+    first_name = data.get("first_name")
+    last_name = data.get("last_name")
     
     # Hash the password
     hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
@@ -339,6 +344,13 @@ def signup():
             INSERT INTO Trainer (FirstName, LastName, Email, Password, specialty)
             VALUES (%s, %s, %s, %s, %s)
         """, (first_name, last_name, email, hashed_password, specialty))
+
+    elif user_type == 'admin':
+            #full_name = data.get("firstName")  # Admin uses firstName for full name
+            cursor.execute("""
+                INSERT INTO Admin (full_name, email, password)
+                VALUES (%s, %s, %s)
+            """, (first_name, email, hashed_password))
     
     connection.commit()
     close_connection(connection)
@@ -500,6 +512,93 @@ def get_statistics(trainer_id):
     
     close_connection(connection)
     return jsonify(statistics)
+
+@app.route('/admin/users', methods=['GET'])
+@cross_origin(origin='*')
+def get_all_users():
+    connection = create_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        cursor.execute("""
+            SELECT 
+                client_id, 'client' AS UserType, FirstName, LastName, Email, Height, Weight, Age, NULL AS Specialty 
+            FROM Client
+            UNION ALL
+            SELECT 
+                TrainerId, 'trainer' AS UserType, FirstName, LastName, Email, NULL AS Height, NULL AS Weight, NULL AS Age, Specialty 
+            FROM Trainer
+        """)
+        users = cursor.fetchall()
+        return jsonify(users)
+    except Error as e:
+        print(f"Error fetching users: {e}")
+        return jsonify({"error": "Error fetching users"}), 500
+    finally:
+        close_connection(connection)
+
+@app.route('/admin/create_user', methods=['POST'])
+@cross_origin(origin='*')
+def create_user():
+    data = request.json
+    user_type = data.get('userType')
+    email = data.get('email')
+    password = data.get('password').encode('utf-8')
+    first_name = data.get('firstName')
+    last_name = data.get('lastName')
+    hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+
+    connection = create_connection()
+    cursor = connection.cursor()
+
+    try:
+        if user_type == 'client':
+            height = data.get('height')
+            weight = data.get('weight')
+            age = data.get('age')
+            cursor.execute("""
+                INSERT INTO Client (FirstName, LastName, Email, Password, Height, Weight, Age)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, (first_name, last_name, email, hashed_password, height, weight, age))
+        elif user_type == 'trainer':
+            specialty = data.get('specialty')
+            cursor.execute("""
+                INSERT INTO Trainer (FirstName, LastName, Email, Password, Specialty)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (first_name, last_name, email, hashed_password, specialty))
+        else:
+            return jsonify({"error": "Invalid user type"}), 400
+
+        connection.commit()
+        return jsonify({"message": "User created successfully"}), 201
+    except Error as e:
+        print(f"Error creating user: {e}")
+        return jsonify({"error": "Error creating user"}), 500
+    finally:
+        close_connection(connection)
+
+@app.route('/admin/delete_user/<int:user_id>', methods=['DELETE'])
+@cross_origin(origin='*')
+def delete_user(user_id):
+    connection = create_connection()
+    cursor = connection.cursor()
+
+    try:
+        # Attempt to delete from Client table
+        cursor.execute("DELETE FROM Client WHERE id = %s", (user_id,))
+        if cursor.rowcount == 0:
+            # If not in Client, try Trainer table
+            cursor.execute("DELETE FROM Trainer WHERE id = %s", (user_id,))
+            if cursor.rowcount == 0:
+                return jsonify({"error": "User not found"}), 404
+
+        connection.commit()
+        return jsonify({"message": "User deleted successfully"}), 200
+    except Error as e:
+        print(f"Error deleting user: {e}")
+        return jsonify({"error": "Error deleting user"}), 500
+    finally:
+        close_connection(connection)
 
 
 @app.after_request

@@ -34,7 +34,7 @@ for password in passwords:
 print("________")
 
 trainer_passwords = [
-    "trainerpass1", "trainerpass2", "trainerpass3", "trainerpass4", "trainerpass5",
+    "adminpass", "trainerpass2", "trainerpass3", "trainerpass4", "trainerpass5",
     "trainerpass6", "trainerpass7", "trainerpass8", "trainerpass9", "trainerpass10",
     "trainerpass11", "trainerpass12", "trainerpass13", "trainerpass14", "trainerpass15",
     "trainerpass16", "trainerpass17", "trainerpass18", "trainerpass19", "trainerpass20"
