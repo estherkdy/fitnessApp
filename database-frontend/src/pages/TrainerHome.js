@@ -360,25 +360,48 @@ function TrainerHome() {
     };
 
     const viewStats = async () => {
-        let numClients = 0 // get number of clients
-        let numReminders = 0; // get number of reminders sent
-        let numExercises = 0; // get number of exercises created
-        let numMeals = 0; // get number of meals created
-        openModal(
-            <div>
-                <p>Current number of clients: {numClients}</p>
-                <p>Reminders sent: {numReminders}</p>
-                <p>Exercises created: {numExercises}</p>
-                <p>Meals created: {numMeals}</p>
-            </div>
-        )
-    }
+        try {
+            const clientsResponse = await fetch(`/trainer/${trainerId}/assigned_clients`);
+            const clientsData = await clientsResponse.json();
+            console.log(clientsData);  // Check if this returns { num_clients: x }
+    
+            const remindersResponse = await fetch(`/trainer/${trainerId}/reminders_sent`);
+            const remindersData = await remindersResponse.json();
+            console.log(remindersData);  // Check if this returns { num_reminders: x }
+    
+            const exercisesResponse = await fetch(`/trainer/${trainerId}/exercises_created`);
+            const exercisesData = await exercisesResponse.json();
+            console.log(exercisesData);  // Check if this returns { num_exercises: x }
+    
+            const mealsResponse = await fetch(`/trainer/${trainerId}/meals_created`);
+            const mealsData = await mealsResponse.json();
+            console.log(mealsData);  // Check if this returns { num_meals: x }
+    
+            // Open modal with the stats
+            openModal(
+                <div>
+                    <p>Current number of clients: {clientsData.num_clients}</p>
+                    <p>Reminders sent: {remindersData.num_reminders}</p>
+                    <p>Exercises created: {exercisesData.num_exercises}</p>
+                    <p>Meals created: {mealsData.num_meals}</p>
+                </div>
+            );
+        } catch (error) {
+            console.error('Error fetching stats:', error);
+        }
+    };
+    
+    
     
     return (
         <div className="client-home">
             <div className="button-box">
                 <button className="logout-button" onClick={() => navigate('/')}>Log Out</button>
-                <button className="stats" onClick={viewStats}>Your Statistics</button>
+                <button className="stats" onClick={() => { console.log('Stats button clicked'); viewStats(); }}>
+    Your Statistics
+</button>
+
+
                 <button className="update-button" onClick={() => navigate('/trainerupdate')}>View Profile</button>
             </div>
             <div className='box'>
