@@ -60,9 +60,9 @@ function TrainerHome() {
                                 <p>Age: {client.age} years</p>
                                 <p>Height: {client.height} cm</p>
                                 <p>Weight: {client.weight} kg</p>
+                                <button className='del-client' onClick={removeClient}>Remove Client</button>
                             </div>
                         ))}
-                        <button className='del-client' onClick={removeClient}>Remove Client</button>
                     </div>
                 ) : (
                     <p>No clients found.</p>
@@ -403,7 +403,7 @@ function TrainerHome() {
         <div className="client-home">
             <div className="button-box">
                 <button className="logout-button" onClick={() => navigate('/')}>Log Out</button>
-                <button className="stats" onClick={viewStats}>
+                <button className="stats" onClick={() => navigate('/trainerstats')}>
     Your Statistics
 </button>
 
@@ -415,13 +415,13 @@ function TrainerHome() {
                 <button className='button' onClick={viewClients}>View Clients</button>
 
                 {/* View Unassigned Clients */}
-                <button className='button' onClick={viewUnassignedClients}>View Unassigned Clients</button>
+                <button className='button' onClick={() => navigate('/unassignedclients')}>View Unassigned Clients</button>
 
                 {/* View Fitness Plans */}
-                <button className='button' onClick={selectClientFitnessPlan}>View Fitness Plans</button>
+                <button className='button' onClick={() => navigate('/fitnessplans')}>View Fitness Plans</button>
 
                 {/* Send Reminder */}
-                <button className='button' onClick={openSendReminder}>Send Reminder</button>
+                <button className='button' onClick={() => navigate('/sendreminder')}>Send Reminder</button>
             </div>
 
             {/* Modal */}

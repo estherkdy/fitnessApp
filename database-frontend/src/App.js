@@ -15,6 +15,10 @@ import AdminHome from './pages/AdminHome';
 import LogExercise from './pages/LogExercise';
 import LogMeal from './pages/LogMeal';
 import ClientStats from './pages/ClientStats';
+import UnassignedClients from './pages/UnassignedClients';
+import FitnessPlans from './pages/FitnessPlans';
+import SendReminder from './pages/SendReminder';
+import TrainerStats from './pages/TrainerStats';
 
 function App() {
   return (
@@ -33,6 +37,10 @@ function App() {
           <Route path="/logexercise" element={<LogExercise />} />
           <Route path="/logmeal" element={<LogMeal />} />
           <Route path="/clientstats" element={<ClientStats />} />
+          <Route path="/unassignedclients" element={<UnassignedClients />} />
+          <Route path="/fitnessplans" element={<FitnessPlans />} />
+          <Route path="/sendreminder" element={<SendReminder />} />
+          <Route path="/trainerstats" element={<TrainerStats />} />
         </Routes>
     </Router>
   );
