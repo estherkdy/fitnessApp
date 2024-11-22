@@ -73,16 +73,17 @@ CREATE TABLE Workout (
     FOREIGN KEY (PlanID) REFERENCES FitnessPlan(PlanID) ON DELETE CASCADE
 );
 
--- Exercise Table (references Workout)
 CREATE TABLE Exercise (
     ExerciseID INT AUTO_INCREMENT PRIMARY KEY,
     WorkoutID INT,
+    TrainerID INT,   
     Name VARCHAR(100) NOT NULL,
     Reps INT CHECK (Reps > 0),
     Sets INT CHECK (Sets > 0),
     CaloriesBurned FLOAT CHECK (CaloriesBurned >= 0),
     Completed BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (WorkoutID) REFERENCES Workout(WorkoutID) ON DELETE CASCADE
+    FOREIGN KEY (WorkoutID) REFERENCES Workout(WorkoutID) ON DELETE CASCADE,
+    FOREIGN KEY (TrainerID) REFERENCES Trainer(TrainerID) ON DELETE SET NULL
 );
 
 -- Diet Table (references FitnessPlan)
@@ -93,7 +94,6 @@ CREATE TABLE Diet (
     FOREIGN KEY (PlanID) REFERENCES FitnessPlan(PlanID) ON DELETE CASCADE
 );
 
--- Meal Table (references Diet)
 CREATE TABLE Meal (
     MealID INT AUTO_INCREMENT PRIMARY KEY,
     DietID INT,
@@ -105,6 +105,7 @@ CREATE TABLE Meal (
     Completed BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (DietID) REFERENCES Diet(DietID) ON DELETE CASCADE
 );
+
 
 -- Reminder Table (references Client and Trainer)
 CREATE TABLE Reminder (
