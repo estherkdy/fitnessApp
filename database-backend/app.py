@@ -425,6 +425,28 @@ def view_reminders_sent(trainer_id):
     return jsonify(reminder_count)
 
 
+@app.route('/search_trainers', methods=['GET', 'OPTIONS'])
+@cross_origin(origin='*')
+def search_trainers():
+    specialty = request.args.get("specialty")  
+
+    connection = create_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    # Search for trainers by specialty
+    cursor.execute("""
+        SELECT TrainerID, FirstName, LastName, Email, Specialty
+        FROM Trainer
+        WHERE Specialty LIKE %s
+    """, (f"%{specialty}%",))
+    
+    trainers = cursor.fetchall()
+    close_connection(connection)
+    
+    return jsonify(trainers)
+
+
+
 @app.route('/trainer/<int:trainer_id>/exercises_created', methods=['GET', 'OPTIONS'])
 @cross_origin(origin='*')
 def view_exercises_created(trainer_id):
