@@ -76,7 +76,8 @@ CREATE TABLE Workout (
 CREATE TABLE Exercise (
     ExerciseID INT AUTO_INCREMENT PRIMARY KEY,
     ClientID INT,
-    TrainerID INT,   
+    TrainerID INT,
+    Date DATE DEFAULT NULL,   
     Name VARCHAR(100) NOT NULL,
     Reps INT CHECK (Reps > 0),
     Sets INT CHECK (Sets > 0),
@@ -97,6 +98,7 @@ CREATE TABLE Diet (
 CREATE TABLE Meal (
     MealID INT AUTO_INCREMENT PRIMARY KEY,
     ClientID INT,
+    Date DATE DEFAULT NULL,
     meal_name VARCHAR(255) NOT NULL,
     Calories FLOAT CHECK (Calories >= 0),
     Protein FLOAT CHECK (Protein >= 0),
