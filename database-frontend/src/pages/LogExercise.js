@@ -4,23 +4,46 @@ import axios from 'axios';
 import './Home.css';
 
 function LogExercise() {
-
     const navigate = useNavigate();
-    const [exercises, setExercises] = useState([]);
-    const [exerciseData, setExerciseData] = useState('');
-    
-    const addExercise = () => {
-        setExercises([...exercises, exerciseData]);
-        setExerciseData({ name: '', reps: '', sets: '', duration: '', calories: '' });
-    };
+    const clientId = localStorage.getItem('clientId'); // Assuming clientId is stored in localStorage
+    const [exerciseData, setExerciseData] = useState({
+        name: '',
+        reps: '',
+        sets: '',
+        calories_burned: '',
+        date: ''
+    });
 
     const handleExerciseChange = (e) => {
-        setExerciseData({ ...exerciseData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+
+        // Ensure calories_burned only accepts valid floats
+        if (name === 'calories_burned') {
+            const floatRegex = /^\d*\.?\d*$/; // Regex for a valid float
+            if (!floatRegex.test(value)) {
+                return; // Reject invalid input
+            }
+        }
+
+        setExerciseData({ ...exerciseData, [name]: value });
+    };
+
+    const addExercise = async () => {
+        try {
+            const response = await axios.post(`/client/log_exercise/${clientId}`, exerciseData);
+            alert(response.data.message || 'Exercise logged successfully');
+            setExerciseData({ name: '', reps: '', sets: '', calories_burned: '', date: '' });
+        } catch (error) {
+            console.error('Error logging exercise:', error);
+            alert('Failed to log exercise. Please try again.');
+        }
     };
 
     return (
         <div className="center-container">
-            <button className='back-button' title="Back" onClick={() => navigate(-1)}>Back</button>
+            <button className="back-button" title="Back" onClick={() => navigate(-1)}>
+                Back
+            </button>
             <h3>Log Exercise</h3>
             <input
                 type="text"
@@ -44,17 +67,10 @@ function LogExercise() {
                 onChange={handleExerciseChange}
             />
             <input
-                type="number"
-                name="duration"
-                placeholder="Duration (mins)"
-                value={exerciseData.duration}
-                onChange={handleExerciseChange}
-            />
-            <input
-                type="number"
-                name="calories"
+                type="text"
+                name="calories_burned"
                 placeholder="Calories Burned"
-                value={exerciseData.calories}
+                value={exerciseData.calories_burned}
                 onChange={handleExerciseChange}
             />
             <input
@@ -65,7 +81,7 @@ function LogExercise() {
             />
             <button onClick={addExercise}>Add Exercise</button>
         </div>
-    )
+    );
 }
 
 export default LogExercise;

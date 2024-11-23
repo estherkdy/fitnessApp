@@ -91,7 +91,7 @@ function AdminHome() {
                     {users.length > 0 ? (
                         <div className="user-list">
                             {users.map((user) => (
-                                <div key={user.id} className="user-card">
+                                <div key={user.client_id || user.TrainerID} className="user-card">
                                     <h3>{user.FirstName} {user.LastName}</h3>
                                     <p>Email: {user.Email}</p>
                                     <p>Type: {user.UserType}</p>
@@ -107,7 +107,7 @@ function AdminHome() {
                                     )}
                                     <button
                                         className="delete-button"
-                                        onClick={() => handleDeleteUser(user.id)}
+                                        onClick={() => handleDeleteUser(user.client_id || user.TrainerID)}
                                     >
                                         Delete User
                                     </button>

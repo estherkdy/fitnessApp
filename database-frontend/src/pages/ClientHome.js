@@ -215,19 +215,7 @@ function ClientHome() {
     }
 
     const searchTrainers = () => {
-        openModal(
-            <>
-                <label htmlFor="specialtySelect">Select your trainer specialty:</label>
-                <select id="specialtySelect" value={specialty} onChange={handleSpecialty}>
-                    <option value="">Select your trainer specialty</option>
-                    <option value="strength_training">Strength Training</option>
-                    <option value="muscular_endurance">Muscular Endurance</option>
-                    <option value="cardio_endurance">Cardiovascular Endurance</option>
-                    <option value="dietician">Dietician</option>
-                    <option value="life_coach">Life Coach</option>
-                </select>
-            </>
-        )
+        navigate("/clientviewtrainers")
     }
 
     const [caloriesConsumed, setCaloriesConsumed] = useState(0);

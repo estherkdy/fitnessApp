@@ -25,7 +25,7 @@ function TrainerStats() {
                 const remindersResponse = await fetch(`/trainer/${trainerId}/reminders_sent`);
                 const remindersData = await remindersResponse.json();
 
-                const exercisesResponse = await fetch(`/trainer/${trainerId}/exercises_created`);
+                const exercisesResponse = await fetch(`/trainer/${trainerId}/workouts_created`);
                 const exercisesData = await exercisesResponse.json();
 
                 const mealsResponse = await fetch(`/trainer/${trainerId}/meals_created`);
@@ -61,7 +61,7 @@ function TrainerStats() {
             <h2>Your Statistics</h2>
             <p>Current number of clients: {stats.num_clients}</p>
             <p>Reminders sent: {stats.num_reminders}</p>
-            <p>Exercises created: {stats.num_exercises}</p>
+            <p>Workouts created: {stats.num_exercises}</p>
             <p>Meals created: {stats.num_meals}</p>
         </div>
     );

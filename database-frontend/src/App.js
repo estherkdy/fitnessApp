@@ -19,6 +19,7 @@ import UnassignedClients from './pages/UnassignedClients';
 import FitnessPlans from './pages/FitnessPlans';
 import SendReminder from './pages/SendReminder';
 import TrainerStats from './pages/TrainerStats';
+import ClientViewTrainers from './pages/ClientViewTrainers';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="/adminhome" element={<AdminHome />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/clienthome" element={<ClientHome />} />
+          <Route path="/clientviewtrainers" element={<ClientViewTrainers />} />
           <Route path="/trainerhome" element={<TrainerHome />} />
           <Route path="/trainerupdate" element={<TrainerUpdate />} />
           <Route path="/clientupdate" element={<ClientUpdate />} />

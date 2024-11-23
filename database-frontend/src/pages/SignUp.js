@@ -61,8 +61,10 @@ function SignUp() {
                 const response = await axios.post('/signup', userData, { withCredentials: true });
                 console.log('Response:', response.data);
                 if (userType === 'client') {
+                    localStorage.setItem('clientId', response.data.id);
                     navigate('/clienthome');
                 } else if (userType === 'trainer') {
+                    localStorage.setItem('trainerID', response.data.id);
                     navigate('/trainerhome');
                 } else {
                     navigate('/adminhome');
