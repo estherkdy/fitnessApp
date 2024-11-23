@@ -75,14 +75,14 @@ CREATE TABLE Workout (
 
 CREATE TABLE Exercise (
     ExerciseID INT AUTO_INCREMENT PRIMARY KEY,
-    WorkoutID INT,
+    ClientID INT,
     TrainerID INT,   
     Name VARCHAR(100) NOT NULL,
     Reps INT CHECK (Reps > 0),
     Sets INT CHECK (Sets > 0),
     CaloriesBurned FLOAT CHECK (CaloriesBurned >= 0),
     Completed BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (WorkoutID) REFERENCES Workout(WorkoutID) ON DELETE CASCADE,
+    FOREIGN KEY (ClientID) REFERENCES Client(client_id) ON DELETE CASCADE,
     FOREIGN KEY (TrainerID) REFERENCES Trainer(TrainerID) ON DELETE SET NULL
 );
 
@@ -96,14 +96,15 @@ CREATE TABLE Diet (
 
 CREATE TABLE Meal (
     MealID INT AUTO_INCREMENT PRIMARY KEY,
-    DietID INT,
+    ClientID INT,
     meal_name VARCHAR(255) NOT NULL,
     Calories FLOAT CHECK (Calories >= 0),
     Protein FLOAT CHECK (Protein >= 0),
     Carbs FLOAT CHECK (Carbs >= 0),
     Fat FLOAT CHECK (Fat >= 0),
     Completed BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (DietID) REFERENCES Diet(DietID) ON DELETE CASCADE
+    FOREIGN KEY (ClientID) REFERENCES Client(client_id) ON DELETE CASCADE
+    
 );
 
 

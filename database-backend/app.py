@@ -601,13 +601,127 @@ def delete_user(user_id):
         close_connection(connection)
 
 
-@app.after_request
-def apply_cors(response):
-    response.headers["Access-Control-Allow-Origin"] = "http://localhost:3000"
-    response.headers["Access-Control-Allow-Credentials"] = "true"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, DELETE, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-    return response
+@app.route('/client/exercises_by_date/<int:client_id>', methods=['GET'])
+@cross_origin(origin='http://localhost:3000')
+def get_exercises_by_date(client_id):
+    date = request.args.get("date")  # Fetch the date parameter from the query string
+
+    connection = create_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        # Fetch exercises based on the client ID and date
+        cursor.execute("""
+            SELECT * 
+            FROM Exercise
+            WHERE ClientID = %s AND Date = %s
+        """, (client_id, date))
+        exercises = cursor.fetchall()
+
+        return jsonify(exercises), 200
+    except Error as e:
+        print(f"Error fetching exercises by date: {e}")
+        return jsonify({"error": "Failed to fetch exercises"}), 500
+    finally:
+        close_connection(connection)
+
+
+
+@app.route('/client/log_exercise/<int:client_id>', methods=['POST'])
+@cross_origin(origin='http://localhost:3000')
+def log_exercise(client_id):
+    data = request.json
+    name = data.get("name")
+    reps = data.get("reps")
+    sets = data.get("sets")
+    calories_burned = data.get("calories_burned")
+    date = data.get("date")
+
+    connection = create_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        # Step 1: Retrieve the TrainerID associated with the ClientID
+        cursor.execute("""
+            SELECT TrainerID
+            FROM FitnessPlan
+            WHERE ClientID = %s AND (EndDate IS NULL OR EndDate >= CURDATE())
+            LIMIT 1
+        """, (client_id,))
+        trainer_row = cursor.fetchone()
+
+        trainer_id = trainer_row['TrainerID'] if trainer_row else None
+
+        # Step 2: Insert the exercise data into the Exercise table
+        cursor.execute("""
+            INSERT INTO Exercise (ClientID, TrainerID, Name, Reps, Sets, CaloriesBurned, Date)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (client_id, trainer_id, name, reps, sets, calories_burned, date))
+        connection.commit()
+
+        return jsonify({"message": "Exercise logged successfully"}), 201
+    except Error as e:
+        print(f"Error logging exercise: {e}")
+        return jsonify({"error": "Failed to log exercise"}), 500
+    finally:
+        close_connection(connection)
+
+
+@app.route('/client/meals_by_date/<int:user_id>', methods=['GET'])
+@cross_origin(origin='http://localhost:3000')
+def get_meals_by_date(user_id):
+    date = request.args.get("date")  # Get the date from query parameters
+
+    if not date:
+        return jsonify({"error": "Date parameter is required"}), 400
+
+    connection = create_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        cursor.execute("""
+            SELECT *
+            FROM Meal
+            WHERE Date = %s AND ClientID = %s
+        """, (date, user_id))
+        meals = cursor.fetchall()
+
+        return jsonify(meals), 200
+    except Error as e:
+        print(f"Error fetching meals by date: {e}")
+        return jsonify({"error": "Failed to fetch meals"}), 500
+    finally:
+        close_connection(connection)
+
+
+@app.route('/client/log_meal/<int:client_id>', methods=['POST'])
+@cross_origin(origin='http://localhost:3000')
+def log_meal(client_id):
+    data = request.json
+    meal_name = data.get("name")
+    calories = data.get("calories")
+    protein = data.get("protein")
+    carbs = data.get("carbs")
+    fat = data.get("fat")
+    date = data.get("date")
+
+    connection = create_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        cursor.execute("""
+            INSERT INTO Meal (ClientID, meal_name, Calories, Protein, Carbs, Fat, Date)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (client_id, meal_name, calories, protein, carbs, fat, date))
+        connection.commit()
+
+        return jsonify({"message": "Meal logged successfully"}), 201
+    except Error as e:
+        print(f"Error logging meal: {e}")
+        return jsonify({"error": "Failed to log meal"}), 500
+    finally:
+        close_connection(connection)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

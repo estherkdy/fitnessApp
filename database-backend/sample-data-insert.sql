@@ -99,29 +99,7 @@ VALUES
     (19, 'Fat Burn HIIT', 30),
     (20, 'CrossFit Advanced', 60);
 
--- Insert Exercises (at least 20 entries across different Workouts)
-INSERT INTO Exercise (WorkoutID, Name, Reps, Sets, CaloriesBurned, Completed)
-VALUES 
-    (1, 'Running', 15, 3, 300, FALSE),
-    (2, 'Downward Dog', 5, 2, 50, FALSE),
-    (3, 'Bench Press', 10, 3, 100, TRUE),
-    (4, 'Sprints', 20, 4, 200, FALSE),
-    (5, 'Burpees', 10, 4, 150, TRUE),
-    (6, 'Bicep Curls', 12, 3, 100, FALSE),
-    (7, 'Leg Stretch', 5, 3, 30, FALSE),
-    (8, 'Box Jumps', 15, 2, 120, TRUE),
-    (9, 'Plank', 1, 3, 75, FALSE),
-    (10, 'Cycling', 20, 2, 250, FALSE),
-    (11, 'Push Ups', 10, 3, 80, FALSE),
-    (12, 'Jumping Jacks', 20, 3, 90, TRUE),
-    (13, 'Squats', 15, 4, 150, FALSE),
-    (14, 'Forward Fold', 5, 3, 30, TRUE),
-    (15, 'Rowing', 15, 3, 200, FALSE),
-    (16, 'Stair Climb', 10, 3, 130, TRUE),
-    (17, 'Shoulder Press', 12, 3, 100, FALSE),
-    (18, 'Sun Salutation', 3, 5, 60, FALSE),
-    (19, 'Mountain Climbers', 15, 3, 140, TRUE),
-    (20, 'Deadlifts', 10, 3, 180, FALSE);
+
 
 -- Insert Diets (each FitnessPlan can have one Diet)
 INSERT INTO Diet (PlanID, diet_name)
@@ -147,29 +125,6 @@ VALUES
     (19, 'Weight Loss Diet'),
     (20, 'CrossFit Nutrition');
 
--- Insert Meals (at least 20 entries across different Diets)
-INSERT INTO Meal (DietID, meal_name, Calories, Protein, Carbs, Fat, Completed)
-VALUES 
-    (1, 'Grilled Chicken Salad', 400, 30, 10, 15, FALSE),
-    (2, 'Vegetable Stir Fry', 350, 10, 45, 10, FALSE),
-    (3, 'Protein Shake', 250, 20, 15, 5, TRUE),
-    (4, 'Pasta Salad', 500, 15, 60, 10, FALSE),
-    (5, 'Omelette', 300, 20, 5, 20, TRUE),
-    (6, 'Beef Stir Fry', 450, 25, 20, 15, FALSE),
-    (7, 'Tofu Scramble', 300, 20, 15, 10, TRUE),
-    (8, 'Fruit Salad', 200, 2, 50, 0, FALSE),
-    (9, 'Steak and Vegetables', 600, 40, 15, 25, TRUE),
-    (10, 'Quinoa Bowl', 400, 15, 50, 10, FALSE),
-    (11, 'Chicken Wrap', 350, 25, 30, 15, TRUE),
-    (12, 'Fish Tacos', 400, 20, 45, 10, FALSE),
-    (13, 'Veggie Burger', 300, 10, 40, 10, FALSE),
-    (14, 'Smoothie', 150, 5, 35, 5, TRUE),
-    (15, 'Avocado Toast', 250, 5, 30, 15, FALSE),
-    (16, 'Chia Pudding', 200, 8, 30, 10, FALSE),
-    (17, 'Protein Bowl', 450, 30, 40, 15, TRUE),
-    (18, 'Baked Salmon', 500, 35, 20, 25, FALSE),
-    (19, 'Chicken Stir Fry', 400, 25, 30, 10, TRUE),
-    (20, 'Vegetable Soup', 150, 5, 20, 5, FALSE);
 
 -- Insert Reminders (for a variety of Clients and Trainers)
 INSERT INTO Reminder (ClientID, TrainerID, Message, ReminderDate)
