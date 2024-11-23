@@ -1,0 +1,38 @@
+.center-container {
+    max-width: 600px; 
+    margin: 50px auto; 
+    padding: 20px;
+    border: 1px solid #ccc;  
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    background-color: #f9f9f9;  
+  }
+
+label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+
+input, select {
+    padding: 8px;
+    width: 30%;
+    box-sizing: border-box;
+}
+
+.error-text {
+    color: red;     
+    font-weight: bold; 
+}
+
+button:disabled {
+    background-color: #d3d3d3;  
+    color: #a9a9a9;  
+    cursor: not-allowed;  
+}
+
+.back-button {
+    top: 10px;
+    left: 10px;
+    width: 15%;
+}
