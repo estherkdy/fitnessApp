@@ -69,32 +69,39 @@ def get_fitness_plan(client_id):
     connection = create_connection()
     cursor = connection.cursor(dictionary=True)
 
-    cursor.execute("""
-        SELECT fp.PlanID, fp.Description, fp.EndDate
-        FROM FitnessPlan fp
-        WHERE fp.ClientID = %s
-    """, (client_id,))
-    fitness_plans = cursor.fetchall()
-
-    for plan in fitness_plans:
+    try:
+        # Fetch the fitness plans for the client
         cursor.execute("""
-            SELECT e.ExerciseID, e.Name, e.Reps, e.Sets, e.CaloriesBurned, e.Completed
-            FROM Workout w
-            JOIN Exercise e ON w.WorkoutID = e.WorkoutID
-            WHERE w.PlanID = %s
-        """, (plan['PlanID'],))
-        plan['exercises'] = cursor.fetchall()
+            SELECT fp.PlanID, fp.Description, fp.EndDate
+            FROM FitnessPlan fp
+            WHERE fp.ClientID = %s
+        """, (client_id,))
+        fitness_plans = cursor.fetchall()
 
-        cursor.execute("""
-            SELECT m.MealID, m.meal_name, m.Calories, m.Protein, m.Carbs, m.Fat, m.Completed
-            FROM Diet d
-            JOIN Meal m ON d.DietID = m.DietID
-            WHERE d.PlanID = %s
-        """, (plan['PlanID'],))
-        plan['meals'] = cursor.fetchall()
+        for plan in fitness_plans:
+            # Fetch exercises directly using ClientID
+            cursor.execute("""
+                SELECT e.ExerciseID, e.Name, e.Reps, e.Sets, e.CaloriesBurned, e.Completed
+                FROM Exercise e
+                WHERE e.ClientID = %s
+            """, (client_id,))
+            plan['exercises'] = cursor.fetchall()
 
-    close_connection(connection)
-    return jsonify(fitness_plans)
+            # Fetch meals directly using ClientID
+            cursor.execute("""
+                SELECT m.MealID, m.meal_name, m.Calories, m.Protein, m.Carbs, m.Fat, m.Completed
+                FROM Meal m
+                WHERE m.ClientID = %s
+            """, (client_id,))
+            plan['meals'] = cursor.fetchall()
+
+        return jsonify(fitness_plans), 200
+    except Error as e:
+        print(f"Error fetching fitness plans: {e}")
+        return jsonify({"error": "Failed to fetch fitness plans"}), 500
+    finally:
+        close_connection(connection)
+
 
 
 @app.route('/client/<int:client_id>/trainer', methods=['GET', 'OPTIONS'])
@@ -721,6 +728,30 @@ def log_meal(client_id):
         return jsonify({"error": "Failed to log meal"}), 500
     finally:
         close_connection(connection)
+
+
+@app.route('/client/<int:client_id>/reminder/<int:reminder_id>', methods=['DELETE'])
+@cross_origin(origin='http://localhost:3000')
+def delete_reminder(client_id, reminder_id):
+    connection = create_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute("""
+            DELETE FROM Reminder 
+            WHERE ReminderID = %s AND ClientID = %s
+        """, (reminder_id, client_id))
+        if cursor.rowcount == 0:
+            return jsonify({"error": "Reminder not found or does not belong to the client"}), 404
+
+        connection.commit()
+        return jsonify({"message": "Reminder marked as complete and deleted"}), 200
+    except Error as e:
+        print(f"Error deleting reminder: {e}")
+        return jsonify({"error": "Failed to delete reminder"}), 500
+    finally:
+        close_connection(connection)
+
 
 
 if __name__ == '__main__':
